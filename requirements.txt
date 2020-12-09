@@ -1,2 +1,6 @@
 asyncio
 fastapi
+python-socketio
+aiohttp
+uvicorn
+aioredis
