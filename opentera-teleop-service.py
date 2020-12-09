@@ -2,6 +2,7 @@ from fastapi import FastAPI, BackgroundTasks
 import uvicorn
 import aioredis
 import asyncio
+from contextlib import AsyncExitStack, asynccontextmanager
 
 
 class OpenTeraService:
@@ -16,19 +17,50 @@ app = FastAPI(debug=True)
 teleop_service = OpenTeraService(app)
 
 
+async def cancel_redis_tasks(tasks):
+    for task in tasks:
+        if task.done():
+            continue
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+
+
+async def handle_redis_messages(redis, channel: aioredis.pubsub.Channel, service):
+    while await channel.wait_message():
+        # Get message (binary)
+        msg = await channel.get()
+        print("Got Message:", msg)
+
+
 async def redis_task(service):
     print('redis task starting...', service)
-    redis = await aioredis.create_redis('redis://localhost')
-    while True:
-        # print('redis', redis)
-        print('sleep')
-        await asyncio.sleep(1)
+
+    async with AsyncExitStack() as stack:
+        tasks = set()
+        stack.push_async_callback(cancel_redis_tasks, tasks)
+
+        # Auto reconnecting
+        redis = await aioredis.create_redis_pool('redis://localhost')
+        # await stack.enter_async_context(redis)
+
+        res = await redis.psubscribe('*')
+        # messages = await stack.enter_async_context(res[0])
+        task = asyncio.create_task(handle_redis_messages(redis, res[0], service), name='handle_redis_messages')
+        tasks.add(task)
+
+        while True:
+            # print('redis', redis)
+            print('sleep')
+            await asyncio.sleep(1)
 
 
 @app.on_event('startup')
 async def initial_task():
     print('Startup tasks')
-    task = asyncio.create_task(redis_task(teleop_service))
+    task = asyncio.create_task(redis_task(teleop_service), name='redis-task')
 
 
 @app.on_event("shutdown")
