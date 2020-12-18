@@ -6,11 +6,9 @@ from contextlib import AsyncExitStack
 
 
 class OpenTeraService(FastAPI):
-    redis_task = None
-
     def __init__(self):
         FastAPI.__init__(self, debug=True)
-
+        self.redis_task = None
         self.setup_events()
         self.setup_routes()
 
@@ -22,7 +20,6 @@ class OpenTeraService(FastAPI):
     def setup_routes(self):
         # add routes
         from app.routers.index import router as index_router
-
         self.include_router(index_router, prefix="/api")
 
     def __repr__(self):

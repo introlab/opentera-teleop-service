@@ -1,5 +1,6 @@
 asyncio
 fastapi
+fastapi-cache2
 python-socketio
 aiohttp
 uvicorn
