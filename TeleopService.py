@@ -68,6 +68,7 @@ if __name__ == '__main__':
     ServiceAccessManager.api_participant_static_token_key = redis_client.redisGet(RedisVars.RedisVar_ParticipantStaticTokenAPIKey)
     ServiceAccessManager.api_device_token_key = redis_client.redisGet(RedisVars.RedisVar_DeviceTokenAPIKey)
     ServiceAccessManager.api_device_static_token_key = redis_client.redisGet(RedisVars.RedisVar_DeviceStaticTokenAPIKey)
+    ServiceAccessManager.config_man = config_man
 
     # Get service UUID
     service_info = json.loads(redis_client.redisGet(RedisVars.RedisVar_ServicePrefixKey + config_man.service_config['name']))
