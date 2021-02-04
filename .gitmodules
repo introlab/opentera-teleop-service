@@ -1,0 +1,3 @@
+[submodule "submodules/opentera-webrtc-teleop"]
+	path = submodules/opentera-webrtc-teleop
+	url = https://github.com/introlab/opentera-webrtc-teleop.git
