@@ -111,11 +111,11 @@ async def redis_task(service: OpenTeraService):
         await asyncio.gather(*tasks)
 
 
+service = OpenTeraService()
+
 if __name__ == "__main__":
     # This will run with one worker.
-    service = OpenTeraService()
     uvicorn.run(service, host="0.0.0.0", port=8000, loop='asyncio', debug=True)
-
     # Multiple workers.
-    # uvicorn.run('opentera-teleop-service:service', host="0.0.0.0", port=8000,  loop='asyncio', debug=True, workers=8)
+    # uvicorn.run('main:service', host="0.0.0.0", port=8000,  loop='asyncio', debug=True, workers=8)
 

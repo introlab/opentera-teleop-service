@@ -2,16 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 import aioredis
 import asyncio
 from contextlib import AsyncExitStack
+from fastapi.security import OAuth2PasswordBearer
 
 
-class MyRouter(APIRouter):
+
+class IndexRouter(APIRouter):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.redis = None
         self.redis_task = None
 
     async def start_redis_task(self):
-        print('redis task starting...', self)
+        print(self, 'redis task starting...', self)
         self.redis_task = asyncio.create_task(self._redis_task(), name='redis-task')
 
     async def stop_redis_task(self):
@@ -20,7 +22,7 @@ class MyRouter(APIRouter):
             try:
                 await self.redis_task
             except asyncio.CancelledError as e:
-                print('stop_redis_task', e)
+                print(self, 'stop_redis_task cancelled', e)
                 pass
 
     async def _redis_task(self):
@@ -38,7 +40,7 @@ class MyRouter(APIRouter):
             await asyncio.gather(*tasks)
 
     async def _cancel_redis_tasks(self, tasks):
-        print('cancel_redis_tasks')
+        print(self, 'cancel_redis_tasks')
         for task in tasks:
             print('cancel_redis_task', task)
             if task.done():
@@ -54,10 +56,12 @@ class MyRouter(APIRouter):
         while await channel.wait_message():
             # Get message (binary)
             msg = await channel.get()
-            print("Got Message:", msg)
+            print(self, "Got Message:", msg)
 
 
-router = MyRouter(prefix="/index")
+router = IndexRouter(prefix="/index")
+
+
 
 
 @router.get("/")
@@ -77,5 +81,5 @@ async def startup():
 
 @router.on_event('shutdown')
 async def shutdown():
-    print('router shutdown')
+    print(__file__,'router shutdown')
     await router.stop_redis_task()

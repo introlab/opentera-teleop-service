@@ -2,6 +2,11 @@ asyncio
 fastapi
 fastapi-cache2
 python-socketio
+python-multipart
 aiohttp
+aiofiles
 uvicorn
 aioredis
+python-jose
+passlib
+jinja2
