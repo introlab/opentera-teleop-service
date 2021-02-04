@@ -1,0 +1,29 @@
+{
+	"Service": {
+		"name": "RobotTeleOperationService",
+		"hostname": "127.0.0.1",
+		"port": 4080,
+		"debug_mode": true
+	},
+	"Backend": {
+		"hostname": "127.0.0.1",
+		"port": 40075
+	},
+	"Redis": {
+	    "hostname": "127.0.0.1",
+	    "port": 6379,
+	    "db": 0,
+	    "username": "",
+	    "password": ""
+	},
+	"WebRTC": {
+	    "hostname": "127.0.0.1",
+	    "external_port": 40075,
+	    "local_base_port": 9090,
+	    "max_sessions": 10,
+	    "working_directory": "submodules/opentera-webrtc-teleop/signaling-server",
+	    "executable": "python3",
+	    "script": "signaling_server.py",
+	    "arguments": "port;key"
+	}
+}

@@ -1,8 +1,10 @@
 # opentera-teleop-service
+
 OpenTera Service handling teleoperation sessions based on webrtc.
 
-# Setup
-```
+## Setup
+
+```bash
 # Clone GitHub repository with submodules
 git clone https://github.com/introlab/opentera-teleop-service.git --recurse-subdirectory
 
