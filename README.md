@@ -17,8 +17,9 @@ python3 -m venv venv
 # Enable venv
 source venv/bin/activate
 
-# Install requirements
+# Install requirements (service)
 pip install -r requirements.txt
+# Install requirements (signaling-server)
 pip install -r submodules/opentera-webrtc-teleop/signaling-server/requirements.txt
 
 ```

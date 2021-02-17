@@ -25,7 +25,8 @@
 	    "executable": "../../../venv/bin/python",
 	    "script": "signaling_server.py",
 	    "arguments": "port;key",
-		"ice_servers": "iceServers.json",
-		"static_folder": "static"
+		"ice_servers": "../../../config/iceServers.json",
+		"static_folder": "../../../signaling-static",
+		"template_folder": "../../../signaling-template"
 	}
 }

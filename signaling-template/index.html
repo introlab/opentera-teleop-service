@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+    <script>
+        function getSignalingServerPort() {
+            return "{{ port }}";
+        }
+
+        function getSignalingServerPassword() {
+            return "{{ password }}";
+        }
+
+        window.onload = function() {
+            console.log('ServerPort:', getSignalingServerPort(), 'Password', getSignalingServerPassword());
+        }
+    </script>
+
+</head>
+<body>
+
+Server is running on port: {{ port }} with password {{ password }}.
+</body>
+</html>

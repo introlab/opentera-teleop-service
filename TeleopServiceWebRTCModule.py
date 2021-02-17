@@ -22,7 +22,8 @@ class TeleopServiceWebRTCModule(WebRTCModule):
                            '--port=' + str(port),
                            '--password=' + str(key),
                            '--ice_servers=' + self.config.webrtc_config['ice_servers'],
-                           '--static_folder=' + self.config.webrtc_config['static_folder']]
+                           '--static_folder=' + self.config.webrtc_config['static_folder'],
+                           '--template_folder=' + self.config.webrtc_config['template_folder']]
 
         # stdout=os.subprocess.PIPE, stderr=os.subprocess.PIPE)
         try:
@@ -46,3 +47,48 @@ class TeleopServiceWebRTCModule(WebRTCModule):
             print(self.module_name + ' - error starting process:', e)
 
         return False
+
+    def create_webrtc_session(self, room_name, owner_uuid, users: list, participants: list, devices: list):
+        # make sure we kill sessions already started with this owner_uuid or room name
+        self.terminate_webrtc_session_with_owner_uuid(owner_uuid)
+        self.terminate_webrtc_session_with_room_name(room_name)
+
+        # Get next available port
+        port = self.get_available_port()
+        key = room_name
+
+        print(self.module_name + ' - Should create WebRTC session with name:', room_name, port, key)
+
+        if port:
+            url_users = 'https://' + self.config.webrtc_config['hostname'] + ':' \
+                        + str(self.config.webrtc_config['external_port']) \
+                        + '/webrtc_teleop/' + str(port) + '/users?key=' + key
+
+            url_participants = 'https://' + self.config.webrtc_config['hostname'] + ':' \
+                               + str(self.config.webrtc_config['external_port']) \
+                               + '/webrtc_teleop/' + str(port) + '/participants?key=' + key
+
+            url_devices = 'https://' + self.config.webrtc_config['hostname'] + ':' \
+                          + str(self.config.webrtc_config['external_port']) \
+                          + '/webrtc_teleop/' + str(port) + '/devices?key=' + key
+
+            if self.launch_node(port=port, key=key, owner=owner_uuid,
+                                users=users, participants=participants, devices=devices):
+                result = {'url_users': url_users,
+                          'url_participants': url_participants,
+                          'url_devices': url_devices,
+                          'key': key,
+                          'port': port,
+                          'owner': owner_uuid,
+                          'users': users,
+                          'participants': participants,
+                          'devices': devices}
+
+                print(result)
+
+                # Return url
+                return True, result
+            else:
+                return False, {'error': 'Process not launched.'}
+        else:
+            return False, {'error': 'No available port left.'}
