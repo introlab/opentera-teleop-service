@@ -2,7 +2,7 @@ from opentera.services.modules.WebRTCModule import WebRTCModule
 from opentera.services.ServiceConfigManager import ServiceConfigManager
 import os
 import subprocess
-
+from twisted.internet import task
 
 class TeleopServiceWebRTCModule(WebRTCModule):
     def __init__(self, config: ServiceConfigManager):
@@ -22,8 +22,7 @@ class TeleopServiceWebRTCModule(WebRTCModule):
                            '--port=' + str(port),
                            '--password=' + str(key),
                            '--ice_servers=' + self.config.webrtc_config['ice_servers'],
-                           '--static_folder=' + self.config.webrtc_config['static_folder'],
-                           '--template_folder=' + self.config.webrtc_config['template_folder']]
+                           '--static_folder=' + self.config.webrtc_config['static_folder']]
 
         # stdout=os.subprocess.PIPE, stderr=os.subprocess.PIPE)
         try:
@@ -62,15 +61,15 @@ class TeleopServiceWebRTCModule(WebRTCModule):
         if port:
             url_users = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                         + str(self.config.webrtc_config['external_port']) \
-                        + '/webrtc_teleop/' + str(port) + '/users?key=' + key
+                        + '/webrtc_teleop/' + str(port) + '/index.html?pwd=' + key + '&port=' + str(port)
 
             url_participants = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                                + str(self.config.webrtc_config['external_port']) \
-                               + '/webrtc_teleop/' + str(port) + '/participants?key=' + key
+                               + '/webrtc_teleop/' + str(port) + '/index.html?pwd=' + key + '&port=' + str(port)
 
             url_devices = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                           + str(self.config.webrtc_config['external_port']) \
-                          + '/webrtc_teleop/' + str(port) + '/devices?key=' + key
+                          + '/webrtc_teleop/' + str(port) + '/index.html?pwd=' + key + '&port=' + str(port)
 
             if self.launch_node(port=port, key=key, owner=owner_uuid,
                                 users=users, participants=participants, devices=devices):
@@ -85,6 +84,15 @@ class TeleopServiceWebRTCModule(WebRTCModule):
                           'devices': devices}
 
                 print(result)
+
+                def redis_publish_task():
+                    # Send ok via redis
+                    self.redis.publish('webrtc.' + key, 'Ready!')
+
+                # clock = task.Clock()
+                # Delay in 5 seconds
+                from twisted.internet import reactor
+                task.deferLater(reactor, 5, lambda: self.redis.publish('webrtc.' + key, 'Ready!'))
 
                 # Return url
                 return True, result
