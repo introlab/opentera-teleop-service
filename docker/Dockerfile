@@ -1,4 +1,4 @@
-# Image: introlab3it/opentera-teleop-service
+# Image: introlab3it/opentera_teleop_service
 # LABEL version="0.1"
 # LABEL description="OpenTera Test Teleop Service from IntRoLab."
 FROM introlab3it/openteraserver
