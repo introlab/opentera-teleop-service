@@ -4,6 +4,7 @@ import os
 import subprocess
 from twisted.internet import task
 
+
 class TeleopServiceWebRTCModule(WebRTCModule):
     def __init__(self, config: ServiceConfigManager):
         # Default init
