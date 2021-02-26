@@ -1,0 +1,8 @@
+opentera-teleop-service:
+  image: introlab3it/opentera_teleop_service_dev
+  restart: always
+  ports:
+    - "40075:40075"
+  volumes:
+    - opentera-db:/var/lib/postgresql
+    - opentera-certificates:/opentera/teraserver/python/certificates
