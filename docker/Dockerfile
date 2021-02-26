@@ -10,6 +10,15 @@ FROM introlab3it/openteraserver
 WORKDIR /
 RUN git clone --recurse-submodules -b opentera-external-package https://github.com/introlab/opentera-teleop-service.git
 
+# Change shell to bash
+SHELL ["/bin/bash", "-c"]
+
+# Build javascript API and copy to signaling-static
+WORKDIR /opentera-teleop-service/submodules/opentera-webrtc-teleop/opentera-webrtc-web-client
+RUN npm install
+RUN npm run build:umd
+RUN cp dist/* /opentera-teleop-service/signaling-static
+
 # Volumes
 VOLUME /opentera-teleop-service/config
 VOLUME /opentera-teleop-service/static
@@ -18,9 +27,6 @@ VOLUME /opentera-teleop-service/signaling-static
 # Create venv
 WORKDIR /opentera-teleop-service
 RUN $PYTHON3_EXEC -m venv venv
-
-# Change shell to bash
-SHELL ["/bin/bash", "-c"]
 
 # Install requirements
 ENV TELEOP_PYTHON3_EXEC /opentera-teleop-service/venv/bin/python
