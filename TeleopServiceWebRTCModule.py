@@ -62,15 +62,18 @@ class TeleopServiceWebRTCModule(WebRTCModule):
         if port:
             url_users = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                         + str(self.config.webrtc_config['external_port']) \
-                        + '/webrtc_teleop/' + str(port) + '/index.html?pwd=' + key + '&port=' + str(port)
+                        + '/webrtc_teleop/' + str(port) + '/index.html?pwd=' \
+                        + key + '&port=' + str(port) + '&user=1'
 
             url_participants = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                                + str(self.config.webrtc_config['external_port']) \
-                               + '/webrtc_teleop/' + str(port) + '/index.html?pwd=' + key + '&port=' + str(port)
+                               + '/webrtc_teleop/' + str(port) + '/index.html?pwd=' + key \
+                               + '&port=' + str(port) + '&participant=1'
 
             url_devices = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                           + str(self.config.webrtc_config['external_port']) \
-                          + '/webrtc_teleop/' + str(port) + '/index.html?pwd=' + key + '&port=' + str(port)
+                          + '/webrtc_teleop/' + str(port) + '/index.html?pwd=' \
+                          + key + '&port=' + str(port) + '&device=1'
 
             if self.launch_node(port=port, key=key, owner=owner_uuid,
                                 users=users, participants=participants, devices=devices):
