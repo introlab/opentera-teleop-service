@@ -6,3 +6,6 @@ opentera-teleop-service:
   volumes:
     - opentera-db:/var/lib/postgresql
     - opentera-certificates:/opentera/teraserver/python/certificates
+    - teleop-static:/opentera-teleop-service/static
+    - teleop-signaling-static:/opentera-teleop-service/signaling-static
+    - teleop-config:/opentera-teleop-service/config
