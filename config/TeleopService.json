@@ -21,7 +21,7 @@
 	    "external_port": 40075,
 	    "local_base_port": 9090,
 	    "max_sessions": 10,
-	    "working_directory": "submodules/opentera-webrtc-teleop/signaling-server",
+	    "working_directory": "submodules/opentera-webrtc/signaling-server",
 	    "executable": "../../../venv/bin/python",
 	    "script": "signaling_server.py",
 	    "arguments": "port;key",

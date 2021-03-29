@@ -14,7 +14,7 @@ RUN git clone --recurse-submodules -b opentera-external-package https://github.c
 SHELL ["/bin/bash", "-c"]
 
 # Build javascript API and copy to signaling-static
-WORKDIR /opentera-teleop-service/submodules/opentera-webrtc-teleop/opentera-webrtc-web-client
+WORKDIR /opentera-teleop-service/submodules/opentera-webrtc/opentera-webrtc-web-client
 RUN npm install
 RUN npm run build:umd
 RUN cp dist/* /opentera-teleop-service/signaling-static
@@ -31,7 +31,7 @@ RUN $PYTHON3_EXEC -m venv venv
 # Install requirements
 ENV TELEOP_PYTHON3_EXEC /opentera-teleop-service/venv/bin/python
 RUN venv/bin/python3 -m pip install -r requirements.txt
-RUN venv/bin/python3 -m pip install -r submodules/opentera-webrtc-teleop/signaling-server/requirements.txt
+RUN venv/bin/python3 -m pip install -r submodules/opentera-webrtc/signaling-server/requirements.txt
 RUN $TELEOP_PYTHON3_EXEC --version
 
 # Commands

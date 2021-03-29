@@ -20,6 +20,6 @@ source venv/bin/activate
 # Install requirements (service)
 pip install -r requirements.txt
 # Install requirements (signaling-server)
-pip install -r submodules/opentera-webrtc-teleop/signaling-server/requirements.txt
+pip install -r submodules/opentera-webrtc/signaling-server/requirements.txt
 
 ```
