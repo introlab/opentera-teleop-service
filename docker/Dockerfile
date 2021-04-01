@@ -8,7 +8,7 @@ FROM introlab3it/openteraserver
 
 # Setup Service at root directory
 WORKDIR /
-RUN git clone --recurse-submodules -b opentera-external-package https://github.com/introlab/opentera-teleop-service.git
+RUN git clone --recurse-submodules -b main https://github.com/introlab/opentera-teleop-service.git
 
 # Change shell to bash
 SHELL ["/bin/bash", "-c"]
