@@ -11,25 +11,22 @@
 <p>The website files are missing, probably because they were not generated and moved to the appropriate place.</p>
 <p>Please see the "opentera-webrtc-teleop-frontend" project for more information on how to generate and copy the website structure.</p>
 
-<h1>Stream Client</h1>
 
-    <h2>Local Stream</h2>
-    <video id="local_video" muted></video>
+    <h1>Web Data Channel Client</h1>
 
-    <h2>Remote Stream</h2>
     <h4>Name: </h4>
     <input id="name_input" type="text"></input>
 
     <h4>Password: </h4>
-    <input id="password_input" type="text" value="abc"></input>
-
+    <input id="password_input" type="text" value="Automatic"></input>
+    
     <h4>Signaling Server Connection: </h4>
     <button id="connect_button" type="button">Connect</button>
     <button id="close_button" type="button">Close</button>
 
     <h4>Clients: </h4>
     <ul id="client_list"></ul>
-
+    
     <h4>Call All: </h4>
     <button id="call_all_button" type="button">Call All</button>
     <button id="hang_up_all_button" type="button">Hang Up All</button>
@@ -39,8 +36,12 @@
     <input id="id_input" type="text"></input>
     <button id="call_one_button" type="button">Call</button>
 
-    <div id="remote_videos"></div>
+    <h4>Messages: </h4>
+    <input id="text_input" type="text"></input>
+    <button id="send_button" type="button">Send</button><br><br>
+    <textarea id="chat_text_area" rows="10" cols="50" readonly></textarea>
 
-    <script src="client.js"></script>
+    <script src="data_client.js"></script>
+
 </body>
 </html>
