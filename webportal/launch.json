@@ -1,0 +1,7 @@
+{
+    "name": "vuejs: chrome",
+    "url": "http://localhost:8080",
+    "webRoot": "${workspaceFolder}/src",
+    "breakOnLoad": true,
+    "preLaunchTask": "serve"
+}
