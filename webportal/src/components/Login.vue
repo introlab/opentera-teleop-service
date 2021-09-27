@@ -11,6 +11,12 @@
 </template>
 
 <script>
+
+// import { mapState } from 'vuex'
+// import { mapActions } from 'vuex'
+// import { mapMutations } from 'vuex'
+// import { mapGetters } from 'vuex'
+
 export default {
   name: 'Login',
   props: {
@@ -25,12 +31,27 @@ export default {
       this.loading = true
       console.log('handleLogin with', user)
       this.$store.dispatch('auth/login', user).then(
-        () => {
-          this.$router.push('/')
+        (user) => {
+          console.log('websocket_url : ', user.websocket_url)
+          // this.$router.push('/')
+
+          // Connect websocket
+          this.$store.dispatch('auth/connectWebsocket', user.websocket_url).then(
+            (websocket) => {
+              console.log(websocket)
+              this.$router.push('/')
+            },
+            (error) => {
+              this.loading = false
+              console.log('error message (websocket) logging out', error)
+              this.$store.dispatch('auth/logout')
+            }
+          )
         },
         (error) => {
           this.loading = false
-          console.log('error message', error)
+          console.log('error message (login) logging out', error)
+          this.$store.dispatch('auth/logout')
         }
       )
     }
@@ -42,14 +63,12 @@ export default {
     }
   },
   computed: {
-
     isDisabled () {
-      return this.user.username.length === 0 | this.user.password.length === 0
+      return this.user.username.length === 0 || this.user.password.length === 0
     },
     loggedIn () {
       return this.$store.state.auth.status.loggedIn
     }
-
   },
   mounted () {
     console.log('mounted')
