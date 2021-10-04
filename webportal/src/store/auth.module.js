@@ -8,22 +8,27 @@ const initialState = user
     user,
     websocket: null,
     websocketState: 'disconnected',
-    online_devices: []
+    online_devices: [],
+    user_info: {},
+    service_info: {}
   }
   : {
     status: { loggedIn: false },
     user: null,
     websocket: null,
     websocketState: 'disconnected',
-    online_devices: []
+    online_devices: [],
+    user_info: {},
+    service_info: {},
+    device_type_info: {}
   }
 
 export const auth = {
   namespaced: true,
   state: initialState,
   actions: {
-    login ({ commit }, user) {
-      return AuthService.login(user).then(
+    login ({ commit }, loginInfo) {
+      return AuthService.login(loginInfo).then(
         user => {
           commit('loginSuccess', user)
           // Connect websocket
@@ -32,6 +37,21 @@ export const auth = {
         },
         error => {
           commit('loginFailure')
+          return Promise.reject(error)
+        }
+      )
+    },
+    logout ({ commit }) {
+      console.log('dispatch auth/logout')
+      return AuthService.logout(this.state.auth.user).then(
+        retcode => {
+          commit('logout')
+          console.log('logout')
+          return Promise.resolve(retcode)
+        },
+        error => {
+          commit('logout')
+          console.log('logout error', error)
           return Promise.reject(error)
         }
       )
@@ -48,9 +68,52 @@ export const auth = {
         }
       )
     },
-    connectWebsocket ({ commit }, url) {
-      console.log('connectWebsocket at url:', url)
-      const websocket = AuthService.createWebsocket(url)
+    getUserInfo ({ commit }) {
+      return AuthService.getUserInfo(this.state.auth.user).then(
+        info => {
+          commit('updateUserInfo', info)
+          return Promise.resolve(info)
+        },
+        error => {
+          commit('updateUserInfo', {})
+          return Promise.reject(error)
+        }
+      )
+    },
+    getServiceInfo ({ commit }) {
+      return AuthService.getServiceInfo(this.state.auth.user).then(
+        info => {
+          commit('updateServiceInfo', info)
+          return Promise.resolve(info)
+        },
+        error => {
+          commit('updateServiceInfo', {})
+          return Promise.reject(error)
+        }
+      )
+    },
+    getDeviceTypeInfo ({ commit }) {
+      return AuthService.getDeviceTypeInfo(this.state.auth.user).then(
+        info => {
+          commit('updateDeviceTypeInfo', info)
+          return Promise.resolve(info)
+        },
+        error => {
+          commit('updateDeviceTypeInfo', {})
+          return Promise.reject(error)
+        }
+      )
+    },
+    startSession ({ commit, device }) {
+      /*
+        device is the object containing the robot information returned by getOnlineDevices.
+        We will need to star the session by using device.device_uuid
+      */
+      console.log('startSession with: ', device)
+    },
+    connectWebsocket ({ commit }, user) {
+      console.log('connectWebsocket at url:', user.websocket_url)
+      const websocket = AuthService.createWebsocket(user.websocket_url)
 
       // Connect events from websocket
       websocket.onopen = function () {
@@ -82,29 +145,27 @@ export const auth = {
       commit('websocketSuccess', websocket)
 
       return Promise.resolve(websocket)
-      /*
-      return AuthService.createWebsocket(url).then(
-        websocket => {
-          commit('websocketSuccess', websocket)
-          console.log('websocketSuccess')
-          return Promise.resolve(websocket)
-        },
-        error => {
-          commit('websocketFailure')
-          console.log('websocketFailure')
-          return Promise.reject(error)
-        }
-      )
-      */
-    },
-    logout ({ commit }) {
-      AuthService.logout()
-      commit('logout')
     }
   },
   getters: {
     onlineRobots: (state) => {
       return state.online_devices
+    },
+    userInfo: (state) => {
+      return state.user_info
+    },
+    serviceInfo: (state) => {
+      return state.service_info
+    },
+    deviceTypeInfo: (state) => {
+      return state.device_type_info
+    },
+    userName: (state) => {
+      if (state.user_info) {
+        console.log('getters userName', state.user_info, state.user_info.user_firstname)
+        return state.user_info.user_firstname + ' ' + state.user_info.user_lastname
+      }
+      return ''
     }
   },
   mutations: {
@@ -141,11 +202,30 @@ export const auth = {
     },
     logout (state) {
       state.status.loggedIn = false
-      state.user = null
+      state.user = {}
+      state.user_info = {}
+      state.sertice_info = {}
+      state.device_type_info = {}
+      if (state.websocket) {
+        state.websocket.close()
+      }
       state.websocket = null
+      state.websocketState = 'disconnected'
     },
     onlineDeviceStatus (state, devices) {
       state.online_devices = devices
+    },
+    updateUserInfo (state, info) {
+      console.log('updateUserInfo', state, info[0])
+      state.user_info = info[0]
+    },
+    updateServiceInfo (state, info) {
+      console.log('updateServiceInfo', state, info[0])
+      state.service_info = info[0]
+    },
+    updateDeviceTypeInfo (state, info) {
+      console.log('updateDeviceTypeInfo', state, info[0])
+      state.device_type_info = info[0]
     }
   }
 }

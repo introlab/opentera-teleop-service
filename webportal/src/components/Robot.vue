@@ -23,10 +23,11 @@ export default {
   props: { data: Object },
   methods: {
     buttonClicked () {
-      console.log('buttonClicked')
+      console.log('Robot:buttonClicked')
+      console.log('data', this.data, this.$store.state.auth.user)
 
       // Start a session
-      this.$router.push('/session')
+      // this.$router.push('/session')
     }
   },
   computed: {

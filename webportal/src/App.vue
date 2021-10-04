@@ -1,4 +1,7 @@
 <template>
+  <div id="statusbar">
+    <StatusBar> </StatusBar>
+  </div>
   <div id="nav">
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link> |
@@ -9,6 +12,7 @@
 </template>
 
 <style>
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

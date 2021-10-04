@@ -1,5 +1,5 @@
 <template>
-  <div class="login">
+  <form class="login">
     <label for="uname"><b>Username</b></label>
     <input type="text" placeholder="Enter Username" v-model="user.username" required>
 
@@ -7,7 +7,7 @@
     <input type="password" placeholder="Enter Password" v-model="user.password" required>
 
     <button type="submit" @click=loginButtonClicked  :disabled="isDisabled" >Login</button>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -36,14 +36,47 @@ export default {
           // this.$router.push('/')
 
           // Connect websocket
-          this.$store.dispatch('auth/connectWebsocket', user.websocket_url).then(
+          this.$store.dispatch('auth/connectWebsocket', user).then(
             (websocket) => {
               console.log(websocket)
-              this.$router.push('/')
+            },
+            (error) => {
+              console.log('error message (websocket) logging out', error)
+              this.$store.dispatch('auth/logout')
+            }
+          )
+
+          // Get Service Info
+          this.$store.dispatch('auth/getServiceInfo').then(
+            (info) => {
+              console.log(info)
+            },
+            (error) => {
+              console.log('error message (service info) logging out', error)
+              this.$store.dispatch('auth/logout')
+            }
+          )
+
+          // Get Device Type Info
+          this.$store.dispatch('auth/getDeviceTypeInfo').then(
+            (info) => {
+              console.log(info)
+            },
+            (error) => {
+              console.log('error message (deviceTypeInfo) logging out', error)
+              this.$store.dispatch('auth/logout')
+            }
+          )
+
+          // Get User info
+          this.$store.dispatch('auth/getUserInfo').then(
+            (info) => {
+              console.log(info, 'will push /')
+              this.$router.replace('/')
             },
             (error) => {
               this.loading = false
-              console.log('error message (websocket) logging out', error)
+              console.log('error message (user info) logging out', error)
               this.$store.dispatch('auth/logout')
             }
           )
