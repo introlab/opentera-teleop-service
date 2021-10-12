@@ -68,6 +68,17 @@ export default {
             }
           )
 
+          // Get Session Type Info
+          this.$store.dispatch('auth/getSessionTypeInfo').then(
+            (info) => {
+              console.log(info)
+            },
+            (error) => {
+              console.log('error message (getSessionTypeInfo) logging out', error)
+              this.$store.dispatch('auth/logout')
+            }
+          )
+
           // Get User info
           this.$store.dispatch('auth/getUserInfo').then(
             (info) => {

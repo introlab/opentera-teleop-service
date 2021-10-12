@@ -88,29 +88,49 @@ class AuthService {
     })
   }
 
-  startSession (user, device) {
-    return axios.post(API_BASE_URL + 'sessions/manager', {
+  getSessionTypesInfo (user) {
+    return axios.get(API_BASE_URL + 'sessiontypes', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
       },
-      data: {
-        session_manage: {
-          /* ID session must be 0 to create a new session */
-          id_session: 0,
-          /* Hard coded service id */
-          id_service: 2,
-          /* Hard coded session type for now  2 = Teleop-Robot */
-          id_session_type: 2,
-          /* Creator is ourself */
-          id_creator_user: 0,
-          /* Invited users */
-          session_users: [user.user_uuid],
-          /* Invited devices */
-          session_devices: [device.device_uuid],
-          action: 'start'
-        }
+      params: {
+        list: true
       }
     }).then(response => {
+      console.log('getSessionTypesInfo ', response.data)
+      return response.data
+    })
+  }
+
+  startSession (user, device, userInfo, sessionTypeInfo) {
+    console.log('startSession', user, device, userInfo, sessionTypeInfo)
+    return axios.post(API_BASE_URL + 'sessions/manager', {
+      session_manage: {
+        /* ID session must be 0 to create a new session */
+        id_session: 0,
+        /* Use id_service from sessionTypeInfo */
+        id_service: sessionTypeInfo.id_service,
+        /* Use session type from sessionTypeInfo  (Should be Teleop-Robot) */
+        id_session_type: sessionTypeInfo.id_session_type,
+        /* Creator is ourself */
+        // id_creator_user: userInfo.id_user,
+        /* Invited users */
+        session_users: [userInfo.user_uuid],
+        /* No invited participants */
+        session_participants: [],
+        /* Invited devices */
+        session_devices: [device.device_uuid],
+        action: 'start',
+        parameters: ''
+      }
+    },
+    {
+      headers: {
+        Authorization: 'OpenTera ' + user.user_token,
+        'Content-Type': 'application/json'
+      }
+    }
+    ).then(response => {
       console.log('startSession ', response.data)
       return response.data
     })

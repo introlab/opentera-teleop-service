@@ -24,9 +24,16 @@ export default {
   methods: {
     buttonClicked () {
       console.log('Robot:buttonClicked')
-      console.log('data', this.data, this.$store.state.auth.user)
-
       // Start a session
+      this.$store.dispatch('auth/startSession', this.data).then(
+        (session) => {
+          console.log('Robot newSession:', session)
+        },
+        (error) => {
+          console.log('Robot errorSession', error)
+        }
+      )
+
       // this.$router.push('/session')
     }
   },

@@ -1,6 +1,6 @@
 <template>
       <div>
-          StatusBar User : {{ userName }} Service: {{serviceInfo.id_service}} DeviceType: {{deviceTypeInfo}}
+          StatusBar User : {{ userName }} Service: {{serviceInfo.id_service}} DeviceType: {{deviceTypeInfo.id_device_type}} SessionType: {{sessionTypeInfo}}
           <button @click="logoutButtonClicked" :disabled="loggedIn">Logout</button>
       </div>
 </template>
@@ -30,7 +30,7 @@ export default {
     loggedIn () {
       return !this.$store.state.auth.status.loggedIn
     },
-    ...mapGetters(['userName', 'serviceInfo', 'deviceTypeInfo'])
+    ...mapGetters(['userName', 'serviceInfo', 'deviceTypeInfo', 'sessionTypeInfo'])
   }
 }
 </script>

@@ -10,7 +10,8 @@ const initialState = user
     websocketState: 'disconnected',
     online_devices: [],
     user_info: {},
-    service_info: {}
+    service_info: {},
+    session_type_info: {}
   }
   : {
     status: { loggedIn: false },
@@ -20,7 +21,8 @@ const initialState = user
     online_devices: [],
     user_info: {},
     service_info: {},
-    device_type_info: {}
+    device_type_info: {},
+    session_type_info: {}
   }
 
 export const auth = {
@@ -104,12 +106,33 @@ export const auth = {
         }
       )
     },
-    startSession ({ commit, device }) {
+    getSessionTypeInfo ({ commit }) {
+      return AuthService.getSessionTypesInfo(this.state.auth.user).then(
+        info => {
+          commit('updateSessionTypeInfo', info)
+        },
+        error => {
+          commit('updateSessionTypeInfo', {})
+          return Promise.reject(error)
+        }
+      )
+    },
+    startSession ({ commit }, device) {
       /*
         device is the object containing the robot information returned by getOnlineDevices.
         We will need to star the session by using device.device_uuid
       */
       console.log('startSession with: ', device)
+
+      return AuthService.startSession(this.state.auth.user, device, this.state.auth.user_info, this.state.auth.session_type_info).then(
+        session => {
+          commit('updateCurrentSession', session)
+        },
+        error => {
+          commit('updateCurrentSession', {})
+          return Promise.reject(error)
+        }
+      )
     },
     connectWebsocket ({ commit }, user) {
       console.log('connectWebsocket at url:', user.websocket_url)
@@ -125,21 +148,13 @@ export const auth = {
       }
 
       websocket.onerror = function (error) {
-        commit('websocketOnError', websocket, error)
+        commit('websocketOnError', { websocket, error })
       }
 
       websocket.onmessage = function (message) {
-        commit('websocketOnMessage', websocket, message)
-
         const receivedMessage = message.data
         const jsonMessage = JSON.parse(receivedMessage)
-        const msgType = jsonMessage.message.events[0]['@type']
-
-        // console.log('websocketOnMessage', msgType)
-
-        if (msgType === 'type.googleapis.com/opentera.protobuf.JoinSessionEvent') {
-
-        }
+        commit('websocketOnMessage', { websocket, jsonMessage })
       }
 
       commit('websocketSuccess', websocket)
@@ -160,8 +175,11 @@ export const auth = {
     deviceTypeInfo: (state) => {
       return state.device_type_info
     },
+    sessionTypeInfo: (state) => {
+      return state.session_type_info
+    },
     userName: (state) => {
-      if (state.user_info) {
+      if ('user_firstname' in state.user_info && 'user_lastname' in state.user_info) {
         console.log('getters userName', state.user_info, state.user_info.user_firstname)
         return state.user_info.user_firstname + ' ' + state.user_info.user_lastname
       }
@@ -193,19 +211,26 @@ export const auth = {
       console.log('websocketOnClose')
       state.websocketState = 'disconnected'
     },
-    websocketOnError (state, websocket, error) {
+    websocketOnError (state, { websocket, error }) {
       console.log('websocketOnError', error)
       state.websocketState = 'disconnected'
     },
-    websocketOnMessage (state, websocket, message) {
-      console.log('websocketOnMessage', message)
+    websocketOnMessage (state, { websocket, jsonMessage }) {
+      // console.log('websocketOnMessage', jsonMessage)
+
+      const msgType = jsonMessage.message.events[0]['@type']
+      // console.log('websocketOnMessage', msgType)
+      if (msgType === 'type.googleapis.com/opentera.protobuf.JoinSessionEvent') {
+        console.log('******************** JoinSessionEvent')
+      }
     },
     logout (state) {
       state.status.loggedIn = false
       state.user = {}
       state.user_info = {}
-      state.sertice_info = {}
+      state.service_info = {}
       state.device_type_info = {}
+      state.session_type_info = {}
       if (state.websocket) {
         state.websocket.close()
       }
@@ -226,6 +251,22 @@ export const auth = {
     updateDeviceTypeInfo (state, info) {
       console.log('updateDeviceTypeInfo', state, info[0])
       state.device_type_info = info[0]
+    },
+    updateSessionTypeInfo (state, info) {
+      // We are getting all session types, let's find 'Teleop-Robot' type for now.
+      console.log('updateSessionTypeInfo', state, info[0])
+
+      info.forEach(
+        function (sessionType, index) {
+          if (sessionType.session_type_name === 'Teleop-Robot') {
+            console.log('Teleop-Robot found')
+            state.session_type_info = sessionType
+          }
+        }
+      )
+    },
+    updateCurrentSession (state, session) {
+      console.log('currentSession', session)
     }
   }
 }
