@@ -1,19 +1,11 @@
 import AuthService from '../services/opentera_auth'
+import router from '../router'
 
 // const user = JSON.parse(localStorage.getItem('user'))
-const user = null
-const initialState = user
-  ? {
-    status: { loggedIn: false },
-    user,
-    websocket: null,
-    websocketState: 'disconnected',
-    online_devices: [],
-    user_info: {},
-    service_info: {},
-    session_type_info: {}
-  }
-  : {
+
+export const auth = {
+  namespaced: true,
+  state: {
     status: { loggedIn: false },
     user: null,
     websocket: null,
@@ -22,12 +14,9 @@ const initialState = user
     user_info: {},
     service_info: {},
     device_type_info: {},
-    session_type_info: {}
-  }
-
-export const auth = {
-  namespaced: true,
-  state: initialState,
+    session_type_info: {},
+    teleop_session_info: {}
+  },
   actions: {
     login ({ commit }, loginInfo) {
       return AuthService.login(loginInfo).then(
@@ -134,6 +123,17 @@ export const auth = {
         }
       )
     },
+    stopSession ({ commit }) {
+      return AuthService.stopSession(this.state.auth.user, this.state.auth.teleop_session_info).then(
+        session => {
+          commit('updateCurrentSession', {})
+        },
+        error => {
+          commit('updateCurrentSession', {})
+          return Promise.reject(error)
+        }
+      )
+    },
     connectWebsocket ({ commit }, user) {
       console.log('connectWebsocket at url:', user.websocket_url)
       const websocket = AuthService.createWebsocket(user.websocket_url)
@@ -184,6 +184,19 @@ export const auth = {
         return state.user_info.user_firstname + ' ' + state.user_info.user_lastname
       }
       return ''
+    },
+    inSession: (state) => {
+      return ('sessionUrl' in state.teleop_session_info)
+    },
+    sessionUrl: (state) => {
+      if ('sessionUrl' in state.teleop_session_info) {
+        return state.teleop_session_info.sessionUrl
+      } else {
+        return ''
+      }
+    },
+    sessionInfo: (state) => {
+      return state.teleop_session_info
     }
   },
   mutations: {
@@ -221,7 +234,13 @@ export const auth = {
       const msgType = jsonMessage.message.events[0]['@type']
       // console.log('websocketOnMessage', msgType)
       if (msgType === 'type.googleapis.com/opentera.protobuf.JoinSessionEvent') {
-        console.log('******************** JoinSessionEvent')
+        console.log('******************** JoinSessionEvent', jsonMessage.message.events[0])
+
+        // Update state, is this the right way ?
+        state.teleop_session_info = jsonMessage.message.events[0]
+
+        // update router page
+        router.push('/session')
       }
     },
     logout (state) {
@@ -236,6 +255,7 @@ export const auth = {
       }
       state.websocket = null
       state.websocketState = 'disconnected'
+      state.teleop_session_info = {}
     },
     onlineDeviceStatus (state, devices) {
       state.online_devices = devices
@@ -267,6 +287,7 @@ export const auth = {
     },
     updateCurrentSession (state, session) {
       console.log('currentSession', session)
+      state.teleop_session_info = session
     }
   }
 }

@@ -1,14 +1,12 @@
 <template>
-  <div id="statusbar">
-    <StatusBar> </StatusBar>
+  <div class="container-fluid h-100">
+    <div id="statusbar" class="container-fluid">
+      <StatusBar> </StatusBar>
+    </div>
+    <div class="container-fluid" style="height:calc(100% - 50px);">
+      <router-view/>
+    </div>
   </div>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
-    <router-link to="/login">Login</router-link> |
-    <router-link to="/stats">Stats</router-link>
-  </div>
-  <router-view/>
 </template>
 
 <style>
@@ -18,11 +16,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #3c1e50;
+  background-color: grey;
+  height: 100%;
+  width: 100%;
 }
 
 #nav {
-  padding: 30px;
+  padding: 0px;
 }
 
 #nav a {
@@ -33,4 +34,15 @@
 #nav a.router-link-exact-active {
   color: #42b983;
 }
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+#statusbar {
+  width: 100%;
+  height: 50px;
+}
+
 </style>

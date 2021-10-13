@@ -1,9 +1,11 @@
 <template>
-      <div>
-            <b>Name</b> : {{ data.device_name }}
-            <b>UUID</b> : {{ data.device_uuid}}
-            <b>Status</b> : {{ data.device_status }}
-            <button @click="buttonClicked" :disabled="isBusy"> Connect </button>
+      <div class="card-body">
+            <h5 class="card-title">{{ data.device_name }}</h5>
+            <p><b>UUID</b> : {{ data.device_uuid}}</p>
+            <p><b>Status</b> : {{ data.device_status }}</p>
+            <div class="card-footer text-muted">
+              <button class="btn btn-primary" @click="buttonClicked" :disabled="isBusy"> Connect </button>
+            </div>
       </div>
       <!--
       <div>
@@ -39,7 +41,7 @@ export default {
   },
   computed: {
     isBusy () {
-      return this.data.device_status_busy
+      return this.data.device_busy
     }
   }
 }

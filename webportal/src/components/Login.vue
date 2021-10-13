@@ -1,13 +1,24 @@
 <template>
-  <form class="login">
-    <label for="uname"><b>Username</b></label>
-    <input type="text" placeholder="Enter Username" v-model="user.username" required>
-
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" v-model="user.password" required>
-
-    <button type="submit" @click=loginButtonClicked  :disabled="isDisabled" >Login</button>
-  </form>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 offset-md-4">
+        <div class="login-form bg-light mt-4 p-4">
+        <form class="row g-3">
+          <h4>Login Form</h4>
+          <div class="col-12">
+            <label for="uname"><b>Username</b></label>
+            <input type="text" placeholder="Enter Username" class="form-control" v-model="user.username" required>
+          </div>
+          <div class="col-12">
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" class="form-control" v-model="user.password" required>
+          </div>
+          <button type="submit" class="btn btn-dark foat-end" @click=loginButtonClicked  :disabled="isDisabled" >Login</button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -127,5 +138,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  background-color: coral;
 </style>

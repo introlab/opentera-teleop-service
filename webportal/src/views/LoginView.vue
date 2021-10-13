@@ -1,5 +1,5 @@
 <template>
-  <div class="loginview">
+  <div class="container-fluid">
     <Login msg="rien"/>
   </div>
 </template>

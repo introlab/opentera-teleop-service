@@ -135,6 +135,27 @@ class AuthService {
       return response.data
     })
   }
+
+  stopSession (user, session) {
+    console.log('stopSession', user, session)
+    return axios.post(API_BASE_URL + 'sessions/manager', {
+      session_manage: {
+        session_uuid: session.sessionUuid,
+        action: 'stop',
+        parameters: ''
+      }
+    },
+    {
+      headers: {
+        Authorization: 'OpenTera ' + user.user_token,
+        'Content-Type': 'application/json'
+      }
+    }
+    ).then(response => {
+      console.log('stopSession ', response.data)
+      return response.data
+    })
+  }
 }
 
 export default new AuthService()
