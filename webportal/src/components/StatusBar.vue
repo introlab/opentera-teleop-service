@@ -59,7 +59,7 @@ export default {
     loggedIn () {
       return !this.$store.state.auth.status.loggedIn
     },
-    ...mapGetters(['userName', 'serviceInfo', 'deviceTypeInfo', 'sessionTypeInfo', 'inSession', 'sessionInfo'])
+    ...mapGetters(['userName', 'serviceInfo', 'deviceTypeInfo', 'sessionTypeInfo', 'inSession', 'sessionInfo', 'allSessions'])
   }
 }
 </script>

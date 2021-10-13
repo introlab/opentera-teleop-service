@@ -15,7 +15,8 @@ export const auth = {
     service_info: {},
     device_type_info: {},
     session_type_info: {},
-    teleop_session_info: {}
+    teleop_session_info: {},
+    sessions: []
   },
   actions: {
     login ({ commit }, loginInfo) {
@@ -102,6 +103,17 @@ export const auth = {
         },
         error => {
           commit('updateSessionTypeInfo', {})
+          return Promise.reject(error)
+        }
+      )
+    },
+    getSessions ({ commit }) {
+      return AuthService.getAllSessions(this.state.auth.user, this.state.auth.user_info).then(
+        sessions => {
+          commit('updateSessions', sessions)
+        },
+        error => {
+          commit('updateSessions', [])
           return Promise.reject(error)
         }
       )
@@ -197,6 +209,9 @@ export const auth = {
     },
     sessionInfo: (state) => {
       return state.teleop_session_info
+    },
+    allSessions: (state) => {
+      return state.sessions
     }
   },
   mutations: {
@@ -256,6 +271,7 @@ export const auth = {
       state.websocket = null
       state.websocketState = 'disconnected'
       state.teleop_session_info = {}
+      state.sessions = []
     },
     onlineDeviceStatus (state, devices) {
       state.online_devices = devices
@@ -288,6 +304,9 @@ export const auth = {
     updateCurrentSession (state, session) {
       console.log('currentSession', session)
       state.teleop_session_info = session
+    },
+    updateSessions (state, sessions) {
+      state.sessions = sessions
     }
   }
 }

@@ -156,6 +156,20 @@ class AuthService {
       return response.data
     })
   }
+
+  getAllSessions (user, userInfo) {
+    return axios.get(API_BASE_URL + 'sessions', {
+      headers: {
+        Authorization: 'OpenTera ' + user.user_token
+      },
+      params: {
+        id_user: userInfo.id_user
+      }
+    }).then(response => {
+      console.log('getAllSessions ', response.data)
+      return response.data
+    })
+  }
 }
 
 export default new AuthService()
