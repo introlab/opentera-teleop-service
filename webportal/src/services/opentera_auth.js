@@ -29,6 +29,16 @@ class AuthService {
     })
   }
 
+  refreshToken (user) {
+    return axios.get(API_BASE_URL + 'refresh_token', {
+      headers: {
+        Authorization: 'OpenTera ' + user.user_token
+      }
+    }).then(response => {
+      return response.data
+    })
+  }
+
   createWebsocket (url) {
     return new W3CWebSocket(url)
   }

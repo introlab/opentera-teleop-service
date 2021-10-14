@@ -16,7 +16,8 @@ export const auth = {
     device_type_info: {},
     session_type_info: {},
     teleop_session_info: {},
-    sessions: []
+    sessions: [],
+    timer_interval: null
   },
   actions: {
     login ({ commit }, loginInfo) {
@@ -44,6 +45,21 @@ export const auth = {
         error => {
           commit('logout')
           console.log('logout error', error)
+          return Promise.reject(error)
+        }
+      )
+    },
+    refreshToken ({ commit }) {
+      // console.log('dispatch auth/refreshToken')
+      return AuthService.refreshToken(this.state.auth.user).then(
+        token => {
+          // console.log('new token obtained', token.refresh_token)
+          commit('updateToken', token.refresh_token)
+          return Promise.resolve(token.refresh_token)
+        },
+        error => {
+          console.log('Error refreshing token', error)
+          commit('logout')
           return Promise.reject(error)
         }
       )
@@ -218,6 +234,11 @@ export const auth = {
     loginSuccess (state, user) {
       state.status.loggedIn = true
       state.user = user
+
+      // Start timer to update token at every 15 minutes (timer in ms)
+      state.timer_interval = setInterval(() => {
+        this.dispatch('auth/refreshToken')
+      }, 1000 * 60 * 15)
     },
     loginFailure (state) {
       state.status.loggedIn = false
@@ -272,6 +293,15 @@ export const auth = {
       state.websocketState = 'disconnected'
       state.teleop_session_info = {}
       state.sessions = []
+
+      if (state.timer_interval) {
+        clearInterval(state.timer_interval)
+        state.timer_interval = null
+      }
+    },
+    updateToken (state, token) {
+      console.log('updateToken', token)
+      state.user.user_token = token
     },
     onlineDeviceStatus (state, devices) {
       state.online_devices = devices
