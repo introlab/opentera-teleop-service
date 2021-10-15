@@ -197,10 +197,16 @@ class FlaskModule(BaseModule):
         static_resource = File(os.path.join(base_folder, 'static'))
         static_resource.contentTypes['.js'] = 'text/javascript'
         static_resource.contentTypes['.css'] = 'text/css'
-        static_resource.forbidden = True
+        static_resource.forbidden = False
+
+        assets_resource = File(os.path.join(base_folder, 'webportal/dist/assets'))
+        assets_resource.contentTypes['.js'] = 'text/javascript'
+        assets_resource.contentTypes['.css'] = 'text/css'
+        assets_resource.forbidden = False
+    
 
         # the path "/assets" served by our File stuff and
-        root_resource = WSGIRootResource(wsgi_resource, {b'/': static_resource})
+        root_resource = WSGIRootResource(wsgi_resource, {b'static': static_resource, b'assets': assets_resource})
 
         # Create a Twisted Web Site
         site = MySite(root_resource)
@@ -235,7 +241,7 @@ class FlaskModule(BaseModule):
         kwargs = {'flaskModule': self}
 
         from API.QueryVersion import QueryVersion
-  
+
         # Resources
         default_api_ns.add_resource(QueryVersion, '/version', resource_class_kwargs=kwargs)
 
@@ -254,7 +260,12 @@ class FlaskModule(BaseModule):
 @flask_app.errorhandler(404)
 def page_not_found(e):
     # This might occur in Angular if the user is refreshing the page with the web browser
-    return flask_app.send_static_file('index.html')
+    #return e;
+    try:
+        return flask_app.send_static_file('index.html')
+    except NotFound:
+        # If the file was not found, send the default index file
+        return flask_app.send_static_file('default_index.html')
 
 
 @flask_app.after_request

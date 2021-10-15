@@ -17,7 +17,7 @@ from opentera.redis.RedisVars import RedisVars
 from FlaskModule import FlaskModule
 
 # Local
-from BaseWebRTCService import BaseWebRTCService
+from opentera.services.BaseWebRTCService import BaseWebRTCService
 from TeleopServiceWebRTCModule import TeleopServiceWebRTCModule
 
 
@@ -56,6 +56,8 @@ if __name__ == '__main__':
    
     # Get service UUID
     service_info = json.loads(redis_client.redisGet(RedisVars.RedisVar_ServicePrefixKey + config_man.service_config['name']))
+
+    print('**************** service_info : ', service_info)
 
     if service_info is None:
         sys.stderr.write('Error: Unable to get service info from OpenTera Server - is the server running and config '

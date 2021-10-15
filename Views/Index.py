@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask import send_from_directory
 from FlaskModule import flask_app
-from flask import render_template, request
+from flask import render_template, request, redirect
 from werkzeug.exceptions import NotFound
 
 
