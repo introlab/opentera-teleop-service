@@ -2,7 +2,7 @@ import axios from 'axios'
 import { w3cwebsocket as W3CWebSocket } from 'websocket'
 
 // This needs to be specified at runtime...
-const API_BASE_URL = 'https://telesante.3it.usherbrooke.ca:40075/api/user/'
+const API_BASE_URL = process.env.VUE_APP_OPENTERA_API_URL
 
 class AuthService {
   login (loginInfo) {
