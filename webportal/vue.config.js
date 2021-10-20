@@ -3,7 +3,7 @@ module.exports = {
     devtool: 'source-map'
   },
   outputDir: 'dist',
-  assetsDir: 'static',
+  assetsDir: 'assets',
   publicPath: process.env.NODE_ENV === 'production'
     ? '/robot/'
     : '/'
