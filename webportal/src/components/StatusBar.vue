@@ -9,6 +9,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
+      <LocaleChanger></LocaleChanger>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -24,6 +25,7 @@
       </div>
       <button @click="closeSession">Disconnect</button>
       <button @click="logoutButtonClicked" :disabled="loggedIn">Logout</button>
+
     </div>
   </nav>
 </template>
@@ -33,11 +35,12 @@
 // @ is an alias to /src
 
 import { createNamespacedHelpers } from 'vuex'
+import LocaleChanger from '@/components/LocaleChanger.vue'
 const { mapGetters } = createNamespacedHelpers('auth')
 
 export default {
   name: 'StatusBar',
-  components: {},
+  components: { LocaleChanger },
   props: {},
   methods: {
     logoutButtonClicked () {

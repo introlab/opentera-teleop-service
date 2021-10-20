@@ -6,7 +6,7 @@
         <form class="row g-3">
           <h4>Login Form</h4>
           <div class="col-12">
-            <label for="uname"><b>Username</b></label>
+            <label for="uname"><b>{{ $t('Username') }}</b></label>
             <input type="text" placeholder="Enter Username" class="form-control" v-model="user.username" required>
           </div>
           <div class="col-12">
@@ -134,6 +134,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -6,8 +6,9 @@ import StatusBar from '@/components/StatusBar.vue'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
+import i18n from './i18n'
 
-const app = createApp(App)
+const app = createApp(App).use(i18n)
 
 // Add components
 app.component('StatusBar', StatusBar)
