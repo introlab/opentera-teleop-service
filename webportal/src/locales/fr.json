@@ -1,4 +1,8 @@
 {
       "message": "salut i18n !!",
-      "Username": "Nom de l'usager"
+      "Username": "Nom d'utilisateur",
+      "Password": "Mot de passe",
+      "Login": "Authentification",
+      "Enter Username": "Entrez le nom d'utilisateur",
+      "Enter Password": "Entrez le mot de passe"
 }

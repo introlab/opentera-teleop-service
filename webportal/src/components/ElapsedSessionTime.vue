@@ -1,6 +1,6 @@
 <template>
       <div class="session-time">
-            {{ dateTime.hours }}:{{ dateTime.minutes }} [{{elapsedTime.milliseconds}}] {{ sessionInfo }}
+            {{ currentDateTime }}
       </div>
 </template>
 
@@ -31,12 +31,9 @@ export default {
     }
   },
   computed: {
-    dateTime () {
-      return {
-        hours: this.currentDate.getHours(),
-        minutes: this.currentDate.getMinutes(),
-        seconds: this.currentDate.getSeconds()
-      }
+    currentDateTime () {
+      var options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }
+      return this.currentDate.toLocaleDateString('fr', options)
     },
     elapsedTime () {
       return {

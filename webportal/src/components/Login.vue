@@ -4,16 +4,16 @@
       <div class="col-md-4 offset-md-4">
         <div class="login-form bg-light mt-4 p-4">
         <form class="row g-3">
-          <h4>Login Form</h4>
+          <img src="@/assets/LogoOpenTera.png" alt="Logo">
           <div class="col-12">
             <label for="uname"><b>{{ $t('Username') }}</b></label>
-            <input type="text" placeholder="Enter Username" class="form-control" v-model="user.username" required>
+            <input type="text" :placeholder="$t('Enter Username')" class="form-control" v-model="user.username" required>
           </div>
           <div class="col-12">
-            <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" class="form-control" v-model="user.password" required>
+            <label for="psw"><b>{{ $t('Password') }}</b></label>
+            <input type="password" :placeholder="$t('Enter Password')" class="form-control" v-model="user.password" required>
           </div>
-          <button type="submit" class="btn btn-dark foat-end" @click=loginButtonClicked  :disabled="isDisabled" >Login</button>
+          <button type="submit" class="btn btn-dark foat-end" @click=loginButtonClicked  :disabled="isDisabled" >{{$t('Login')}}</button>
         </form>
         </div>
       </div>

@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <Login msg="rien"/>
+    <Login/>
   </div>
 </template>
 
