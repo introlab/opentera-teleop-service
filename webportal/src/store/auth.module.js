@@ -10,7 +10,7 @@ export const auth = {
     user: null,
     websocket: null,
     websocketState: 'disconnected',
-    online_devices: [],
+    online_devices_dict: {},
     user_info: {},
     service_info: {},
     device_type_info: {},
@@ -67,11 +67,11 @@ export const auth = {
     getOnlineDevices ({ commit }) {
       return AuthService.getOnlineDevices(this.state.auth.user).then(
         devices => {
-          commit('onlineDeviceStatus', devices)
+          commit('updateOnlineDevices', devices)
           return Promise.resolve(devices)
         },
         error => {
-          commit('onlineDeviceStatus', [])
+          commit('updateOnlineDevices', [])
           return Promise.reject(error)
         }
       )
@@ -188,11 +188,28 @@ export const auth = {
       commit('websocketSuccess', websocket)
 
       return Promise.resolve(websocket)
+    },
+    getDeviceInfo ({ commit }, deviceUuid) {
+      console.log('getDeviceInfo', deviceUuid)
+      return AuthService.getDeviceInfo(this.state.auth.user, deviceUuid).then(
+        deviceInfo => {
+          commit('updateDeviceInfo', deviceInfo)
+        },
+        error => {
+          commit('updateDeviceInfo', {})
+          return Promise.reject(error)
+        }
+      )
     }
   },
   getters: {
     onlineRobots: (state) => {
-      return state.online_devices
+      // create array from device dict
+      const devices = []
+      for (const [, value] of Object.entries(state.online_devices_dict)) {
+        devices.push(value)
+      }
+      return devices
     },
     userInfo: (state) => {
       return state.user_info
@@ -267,17 +284,44 @@ export const auth = {
     websocketOnMessage (state, { websocket, jsonMessage }) {
       // console.log('websocketOnMessage', jsonMessage)
 
-      const msgType = jsonMessage.message.events[0]['@type']
-      // console.log('websocketOnMessage', msgType)
-      if (msgType === 'type.googleapis.com/opentera.protobuf.JoinSessionEvent') {
-        console.log('******************** JoinSessionEvent', jsonMessage.message.events[0])
+      jsonMessage.message.events.forEach(event => {
+        switch (event['@type']) {
+          case 'type.googleapis.com/opentera.protobuf.JoinSessionEvent':
+            console.log('******************** JoinSessionEvent', event)
+            // Update state, is this the right way ?
+            state.teleop_session_info = event
+            // update router page
+            router.push('/session')
+            break
 
-        // Update state, is this the right way ?
-        state.teleop_session_info = jsonMessage.message.events[0]
+          case 'type.googleapis.com/opentera.protobuf.StopSessionEvent':
+            console.log('**************** StopSessionEvent', event)
+            state.teleop_session_info = {}
+            router.push('/')
+            break
 
-        // update router page
-        router.push('/session')
-      }
+          case 'type.googleapis.com/opentera.protobuf.DeviceEvent':
+            console.log('-------> Handling : ', event)
+            switch (event.type) {
+              case 'DEVICE_CONNECTED':
+                // Will update all online devices
+                this.dispatch('auth/getOnlineDevices')
+                break
+
+              case 'DEVICE_DISCONNECTED':
+                delete state.online_devices_dict[event.deviceUuid]
+                break
+
+              case 'DEVICE_STATUS_CHANGED':
+                this.dispatch('auth/getOnlineDevices')
+                break
+            }
+            break
+
+          default:
+            console.log('Unhandled event type', event['@type'])
+        }
+      })
     },
     logout (state) {
       state.status.loggedIn = false
@@ -286,6 +330,7 @@ export const auth = {
       state.service_info = {}
       state.device_type_info = {}
       state.session_type_info = {}
+      state.online_devices_dict = {}
       if (state.websocket) {
         state.websocket.close()
       }
@@ -303,8 +348,17 @@ export const auth = {
       console.log('updateToken', token)
       state.user.user_token = token
     },
-    onlineDeviceStatus (state, devices) {
-      state.online_devices = devices
+    updateOnlineDevices (state, devices) {
+      // We have an array returned from the API
+      // Converting to map object
+      console.log('updateOnlineDevices')
+      state.online_devices_dict = {}
+      devices.forEach(deviceInfo => {
+        state.online_devices_dict[deviceInfo.device_uuid] = deviceInfo
+      })
+    },
+    updateDeviceInfo (state, device) {
+      console.log('updateDeviceInfo', device)
     },
     updateUserInfo (state, info) {
       console.log('updateUserInfo', state, info[0])

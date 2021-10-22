@@ -57,6 +57,20 @@ class AuthService {
     })
   }
 
+  getDeviceInfo (user, deviceUuid) {
+    return axios.get(API_BASE_URL + 'devices', {
+      headers: {
+        Authorization: 'OpenTera ' + user.user_token
+      },
+      params: {
+        device_uuid: deviceUuid
+      }
+    }).then(response => {
+      console.log('getDeviceInfo ', response.data)
+      return response.data
+    })
+  }
+
   getOnlineDevices (user) {
     return axios.get(API_BASE_URL + 'devices/online', {
       headers: {

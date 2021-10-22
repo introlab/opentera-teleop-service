@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
-        <h1>Online Robots</h1>
-        <div class="card" style="width: 18rem;">
-        <Robot v-for="(robot, index) in onlineRobots " :key=index :data=robot />
-        </div>
+  <div class="d-grid container-fluid bg-secondary">
+      <h1 class="bg-info">Online Robots</h1>
+      <div class="row">
+      <Robot v-for="(robot, index) in onlineRobots " :key=index :data=robot />
+      </div>
   </div>
 </template>
 
