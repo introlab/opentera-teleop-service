@@ -152,6 +152,18 @@ export const api = {
       for (const [, value] of Object.entries(state.online_devices_dict)) {
         devices.push(value)
       }
+
+      // Sort by name
+      devices.sort((a, b) => {
+        if (a.device_name < b.device_name) {
+          return -1 // a comes before b in the sort order.
+        }
+        if (a.device_name > b.device_name) {
+          return 1 // a comes after b in the sort order.
+        }
+        return 0 // a must be equal to b.
+      })
+
       return devices
     },
     userInfo: (state) => {
