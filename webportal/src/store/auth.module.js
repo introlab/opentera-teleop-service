@@ -6,7 +6,7 @@ import router from '../router'
 export const auth = {
   namespaced: true,
   state: {
-    status: { loggedIn: false },
+    status: { loggedIn: false, error: null },
     user: null,
     websocket: null,
     websocketState: 'disconnected',
@@ -23,13 +23,30 @@ export const auth = {
     login ({ commit }, loginInfo) {
       return AuthService.login(loginInfo).then(
         user => {
-          commit('loginSuccess', user)
-          // Connect websocket
           console.log('loginSuccess')
+          commit('loginSuccess', user)
+
+          Promise.all([
+            // Connect websocket
+            this.dispatch('auth/connectWebsocket', user),
+            // Get Service Info
+            this.dispatch('auth/getServiceInfo'),
+            // Get Device Type info
+            this.dispatch('auth/getDeviceTypeInfo'),
+            // Get Session Type info
+            this.dispatch('auth/getSessionTypeInfo'),
+            // Get User info
+            this.dispatch('auth/getUserInfo')
+          ]).finally(() => {
+            router.replace('/')
+          })
+
           return Promise.resolve(user)
         },
         error => {
-          commit('loginFailure')
+          console.log('action login failure')
+          // console.log('loginFailure', error)
+          commit('loginFailure', error)
           return Promise.reject(error)
         }
       )
@@ -46,8 +63,7 @@ export const auth = {
           commit('logout')
           console.log('logout error', error)
           return Promise.reject(error)
-        }
-      )
+        })
     },
     refreshToken ({ commit }) {
       // console.log('dispatch auth/refreshToken')
@@ -257,8 +273,9 @@ export const auth = {
         this.dispatch('auth/refreshToken')
       }, 1000 * 60 * 15)
     },
-    loginFailure (state) {
+    loginFailure (state, error) {
       state.status.loggedIn = false
+      state.status.error = error
       state.user = null
     },
     websocketSuccess (state, websocket) {
@@ -325,6 +342,7 @@ export const auth = {
     },
     logout (state) {
       state.status.loggedIn = false
+      state.status.error = null
       state.user = {}
       state.user_info = {}
       state.service_info = {}

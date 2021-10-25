@@ -5,85 +5,87 @@ import { w3cwebsocket as W3CWebSocket } from 'websocket'
 const API_BASE_URL = process.env.VUE_APP_OPENTERA_API_URL
 
 class AuthService {
-  login (loginInfo) {
-    return axios.get(API_BASE_URL + 'login', {
+  async login (loginInfo) {
+    const response = await axios.get(API_BASE_URL + 'login', {
       auth: {
         username: loginInfo.username,
         password: loginInfo.password
       }
-    }).then(response => {
-      if (response.data.user_token) {
-        localStorage.setItem('user', JSON.stringify(response.data))
-      }
-      return response.data
     })
+    if (response.data.user_token) {
+      localStorage.setItem('user', JSON.stringify(response.data))
+    }
+    return response.data
   }
 
-  logout (user) {
-    return axios.get(API_BASE_URL + 'logout', {
-      headers: {
-        Authorization: 'OpenTera ' + user.user_token
-      }
-    }).then(response => {
+  async logout (user) {
+    if (user) {
+      const response = await axios.get(API_BASE_URL + 'logout', {
+        headers: {
+          Authorization: 'OpenTera ' + user.user_token
+        }
+      })
       return response.data
-    })
+    } else {
+      return Promise.reject(new Error('No user specified'))
+    }
   }
 
-  refreshToken (user) {
-    return axios.get(API_BASE_URL + 'refresh_token', {
-      headers: {
-        Authorization: 'OpenTera ' + user.user_token
-      }
-    }).then(response => {
+  async refreshToken (user) {
+    if (user) {
+      const response = await axios.get(API_BASE_URL + 'refresh_token', {
+        headers: {
+          Authorization: 'OpenTera ' + user.user_token
+        }
+      })
       return response.data
-    })
+    } else {
+      return Promise.reject(new Error('No user specified'))
+    }
   }
 
   createWebsocket (url) {
     return new W3CWebSocket(url)
   }
 
-  getUserInfo (user) {
-    return axios.get(API_BASE_URL + 'users', {
+  async getUserInfo (user) {
+    const response = await axios.get(API_BASE_URL + 'users', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
       },
       params: {
         user_uuid: user.user_uuid
       }
-    }).then(response => {
-      console.log('getUserInfo ', response.data)
-      return response.data
     })
+    console.log('getUserInfo ', response.data)
+    return response.data
   }
 
-  getDeviceInfo (user, deviceUuid) {
-    return axios.get(API_BASE_URL + 'devices', {
+  async getDeviceInfo (user, deviceUuid) {
+    const response = await axios.get(API_BASE_URL + 'devices', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
       },
       params: {
         device_uuid: deviceUuid
       }
-    }).then(response => {
-      console.log('getDeviceInfo ', response.data)
-      return response.data
     })
+    console.log('getDeviceInfo ', response.data)
+    return response.data
   }
 
-  getOnlineDevices (user) {
-    return axios.get(API_BASE_URL + 'devices/online', {
+  async getOnlineDevices (user) {
+    const response = await axios.get(API_BASE_URL + 'devices/online', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
       }
-    }).then(response => {
-      console.log('getOnlineDevices ', response.data)
-      return response.data
     })
+    console.log('getOnlineDevices ', response.data)
+    return response.data
   }
 
-  getServiceInfo (user) {
-    return axios.get(API_BASE_URL + 'services', {
+  async getServiceInfo (user) {
+    const response = await axios.get(API_BASE_URL + 'services', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
       },
@@ -91,14 +93,13 @@ class AuthService {
         key: 'RobotTeleOperationService',
         list: true
       }
-    }).then(response => {
-      console.log('getServices ', response.data)
-      return response.data
     })
+    console.log('getServices ', response.data)
+    return response.data
   }
 
-  getDeviceTypeInfo (user) {
-    return axios.get(API_BASE_URL + 'devicetypes', {
+  async getDeviceTypeInfo (user) {
+    const response = await axios.get(API_BASE_URL + 'devicetypes', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
       },
@@ -106,29 +107,27 @@ class AuthService {
         device_type_key: 'robot',
         list: true
       }
-    }).then(response => {
-      console.log('getDeviceTypeInfo ', response.data)
-      return response.data
     })
+    console.log('getDeviceTypeInfo ', response.data)
+    return response.data
   }
 
-  getSessionTypesInfo (user) {
-    return axios.get(API_BASE_URL + 'sessiontypes', {
+  async getSessionTypesInfo (user) {
+    const response = await axios.get(API_BASE_URL + 'sessiontypes', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
       },
       params: {
         list: true
       }
-    }).then(response => {
-      console.log('getSessionTypesInfo ', response.data)
-      return response.data
     })
+    console.log('getSessionTypesInfo ', response.data)
+    return response.data
   }
 
-  startSession (user, device, userInfo, sessionTypeInfo) {
+  async startSession (user, device, userInfo, sessionTypeInfo) {
     console.log('startSession', user, device, userInfo, sessionTypeInfo)
-    return axios.post(API_BASE_URL + 'sessions/manager', {
+    const response = await axios.post(API_BASE_URL + 'sessions/manager', {
       session_manage: {
         /* ID session must be 0 to create a new session */
         id_session: 0,
@@ -154,15 +153,14 @@ class AuthService {
         'Content-Type': 'application/json'
       }
     }
-    ).then(response => {
-      console.log('startSession ', response.data)
-      return response.data
-    })
+    )
+    console.log('startSession ', response.data)
+    return response.data
   }
 
-  stopSession (user, session) {
+  async stopSession (user, session) {
     console.log('stopSession', user, session)
-    return axios.post(API_BASE_URL + 'sessions/manager', {
+    const response = await axios.post(API_BASE_URL + 'sessions/manager', {
       session_manage: {
         session_uuid: session.sessionUuid,
         action: 'stop',
@@ -175,24 +173,22 @@ class AuthService {
         'Content-Type': 'application/json'
       }
     }
-    ).then(response => {
-      console.log('stopSession ', response.data)
-      return response.data
-    })
+    )
+    console.log('stopSession ', response.data)
+    return response.data
   }
 
-  getAllSessions (user, userInfo) {
-    return axios.get(API_BASE_URL + 'sessions', {
+  async getAllSessions (user, userInfo) {
+    const response = await axios.get(API_BASE_URL + 'sessions', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
       },
       params: {
         id_user: userInfo.id_user
       }
-    }).then(response => {
-      console.log('getAllSessions ', response.data)
-      return response.data
     })
+    console.log('getAllSessions ', response.data)
+    return response.data
   }
 }
 

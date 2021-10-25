@@ -16,6 +16,9 @@
           <button type="submit" class="btn btn-dark foat-end" @click=loginButtonClicked  :disabled="isDisabled" >{{$t('Login')}}</button>
         </form>
         </div>
+        <div class="alert alert-danger" v-if="error">
+          {{ error.response.data }}
+        </div>
       </div>
     </div>
   </div>
@@ -31,7 +34,6 @@
 export default {
   name: 'Login',
   props: {
-    msg: String
   },
   methods: {
     loginButtonClicked () {
@@ -43,78 +45,20 @@ export default {
       console.log('handleLogin with', user)
       this.$store.dispatch('auth/login', user).then(
         (user) => {
-          console.log('websocket_url : ', user.websocket_url)
-          // this.$router.push('/')
-
-          // Connect websocket
-          this.$store.dispatch('auth/connectWebsocket', user).then(
-            (websocket) => {
-              console.log(websocket)
-            },
-            (error) => {
-              console.log('error message (websocket) logging out', error)
-              this.$store.dispatch('auth/logout')
-            }
-          )
-
-          // Get Service Info
-          this.$store.dispatch('auth/getServiceInfo').then(
-            (info) => {
-              console.log(info)
-            },
-            (error) => {
-              console.log('error message (service info) logging out', error)
-              this.$store.dispatch('auth/logout')
-            }
-          )
-
-          // Get Device Type Info
-          this.$store.dispatch('auth/getDeviceTypeInfo').then(
-            (info) => {
-              console.log(info)
-            },
-            (error) => {
-              console.log('error message (deviceTypeInfo) logging out', error)
-              this.$store.dispatch('auth/logout')
-            }
-          )
-
-          // Get Session Type Info
-          this.$store.dispatch('auth/getSessionTypeInfo').then(
-            (info) => {
-              console.log(info)
-            },
-            (error) => {
-              console.log('error message (getSessionTypeInfo) logging out', error)
-              this.$store.dispatch('auth/logout')
-            }
-          )
-
-          // Get User info
-          this.$store.dispatch('auth/getUserInfo').then(
-            (info) => {
-              console.log(info, 'will push /')
-              this.$router.replace('/')
-            },
-            (error) => {
-              this.loading = false
-              console.log('error message (user info) logging out', error)
-              this.$store.dispatch('auth/logout')
-            }
-          )
+          console.log('handleLogin return', user)
+          this.password = ''
         },
         (error) => {
-          this.loading = false
-          console.log('error message (login) logging out', error)
-          this.$store.dispatch('auth/logout')
-        }
-      )
+          this.lastError = error
+          this.password = ''
+        })
     }
   },
   data () {
     return {
       user: { username: '', password: '' },
-      loading: false
+      loading: false,
+      lastError: null
     }
   },
   computed: {
@@ -123,6 +67,9 @@ export default {
     },
     loggedIn () {
       return this.$store.state.auth.status.loggedIn
+    },
+    error () {
+      return this.$store.state.auth.status.error
     }
   },
   mounted () {
@@ -130,7 +77,7 @@ export default {
   },
   created () {
     if (this.loggedIn) {
-      // this.$router.push('/')
+      this.$router.push('/')
     }
   }
 }
