@@ -8,7 +8,7 @@
 <script>
 
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('auth')
+const { mapGetters } = createNamespacedHelpers('api')
 
 export default {
   name: 'SessionView',

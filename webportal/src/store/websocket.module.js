@@ -8,9 +8,9 @@ export const websocket = {
     websocketState: 'disconnected'
   },
   actions: {
-    connectWebsocket ({ commit }, user) {
-      console.log('connectWebsocket at url:', user.websocket_url)
-      const websocket = AuthService.createWebsocket(user.websocket_url)
+    connectWebsocket ({ commit }, url) {
+      console.log('connectWebsocket at url:', url)
+      const websocket = AuthService.createWebsocket(url)
 
       // Connect events from websocket
       websocket.onopen = function () {
@@ -31,16 +31,21 @@ export const websocket = {
         commit('websocketOnMessage', { websocket, jsonMessage })
       }
 
-      commit('websocketSuccess', websocket)
+      commit('websocketCreate', websocket)
 
       return Promise.resolve(websocket)
+    },
+    logout ({ commit }) {
+      commit('logout')
     }
   },
   getters: {
+    websocket: (state) => {
+      return state.websocket
+    }
   },
   mutations: {
-
-    websocketSuccess (state, websocket) {
+    websocketCreate (state, websocket) {
       state.websocket = websocket
     },
     websocketFailure (state) {
@@ -82,7 +87,7 @@ export const websocket = {
             switch (event.type) {
               case 'DEVICE_CONNECTED':
                 // Will update all online devices
-                this.dispatch('auth/getOnlineDevices')
+                this.dispatch('api/getOnlineDevices')
                 break
 
               case 'DEVICE_DISCONNECTED':
@@ -90,7 +95,7 @@ export const websocket = {
                 break
 
               case 'DEVICE_STATUS_CHANGED':
-                this.dispatch('auth/getOnlineDevices')
+                this.dispatch('api/getOnlineDevices')
                 break
             }
             break

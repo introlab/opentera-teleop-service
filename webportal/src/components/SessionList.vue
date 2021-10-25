@@ -16,7 +16,7 @@
 import Session from '@/components/Session.vue'
 
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('auth')
+const { mapGetters } = createNamespacedHelpers('api')
 // import { mapGetters } from 'vuex'
 
 export default {
@@ -29,7 +29,7 @@ export default {
   },
   created () {
     if (this.isLoggedIn()) {
-      this.$store.dispatch('auth/getSessions')
+      this.$store.dispatch('api/getSessions')
     } else {
       this.$router.push('/login')
     }

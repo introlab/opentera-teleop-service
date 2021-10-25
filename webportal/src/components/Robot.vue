@@ -32,7 +32,7 @@ export default {
     buttonClicked () {
       console.log('Robot:buttonClicked')
       // Start a session
-      this.$store.dispatch('auth/startSession', this.data).then(
+      this.$store.dispatch('api/startSession', this.data).then(
         (session) => {
           console.log('Robot newSession:', session)
         },

@@ -39,7 +39,7 @@ import { createNamespacedHelpers } from 'vuex'
 import LocaleChanger from '@/components/LocaleChanger.vue'
 import ElapsedSessionTime from '@/components/ElapsedSessionTime.vue'
 
-const { mapGetters } = createNamespacedHelpers('auth')
+const { mapGetters } = createNamespacedHelpers('api')
 
 export default {
   name: 'StatusBar',
@@ -56,7 +56,7 @@ export default {
     },
     closeSession () {
       console.log('closeSession')
-      this.$store.dispatch('auth/stopSession').then(response => {
+      this.$store.dispatch('api/stopSession').then(response => {
         this.$router.replace('/')
       })
     }

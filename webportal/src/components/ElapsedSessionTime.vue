@@ -8,7 +8,7 @@
 
 // @ is an alias to /src
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('auth')
+const { mapGetters } = createNamespacedHelpers('api')
 
 export default {
   name: 'ElapsedSessionTime',
