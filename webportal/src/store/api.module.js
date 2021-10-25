@@ -1,5 +1,5 @@
 import AuthService from '../services/opentera_api'
-// import router from '../router'
+import router from '../router'
 
 export const api = {
   namespaced: true,
@@ -10,6 +10,7 @@ export const api = {
     device_type_info: {},
     session_type_info: {},
     teleop_session_info: {},
+    current_session: {},
     sessions: []
   },
   actions: {
@@ -73,7 +74,7 @@ export const api = {
       )
     },
     getSessions ({ commit }) {
-      return AuthService.getAllSessions(this.state.auth.user, this.state.auth.user_info).then(
+      return AuthService.getAllSessions(this.state.auth.user, this.state.api.user_info).then(
         sessions => {
           commit('updateSessions', sessions)
         },
@@ -93,6 +94,7 @@ export const api = {
       return AuthService.startSession(this.state.auth.user, device, this.state.api.user_info, this.state.api.session_type_info).then(
         session => {
           commit('updateCurrentSession', session)
+          return Promise.resolve(session)
         },
         error => {
           commit('updateCurrentSession', {})
@@ -104,12 +106,24 @@ export const api = {
       return AuthService.stopSession(this.state.auth.user, this.state.api.teleop_session_info).then(
         session => {
           commit('updateCurrentSession', {})
+          return Promise.resolve(session)
         },
         error => {
           commit('updateCurrentSession', {})
           return Promise.reject(error)
         }
       )
+    },
+    joinSessionWithEvent ({ commit }, event) {
+      console.log('joinSessionWithEvent', event)
+      commit('updateTeleopSession', event)
+      router.push('/session')
+    },
+    stopSessionWithEvent ({ commit }, event) {
+      console.log('stopSessionWithEvent', event)
+      commit('updateTeleopSession', {})
+      commit('updateCurrentSession', {})
+      router.push('/')
     },
     getDeviceInfo ({ commit }, deviceUuid) {
       console.log('getDeviceInfo', deviceUuid)
@@ -122,6 +136,10 @@ export const api = {
           return Promise.reject(error)
         }
       )
+    },
+    removeDeviceWithEvent ({ commit }, event) {
+      console.log('removeDeviceWithEvent', event)
+      commit('updateDeviceRemoval', event.deviceUuid)
     },
     logout ({ commit }) {
       commit('logout')
@@ -165,8 +183,11 @@ export const api = {
         return ''
       }
     },
-    sessionInfo: (state) => {
+    teleopSession: (state) => {
       return state.teleop_session_info
+    },
+    currentSession: (state) => {
+      return state.current_session
     },
     allSessions: (state) => {
       return state.sessions
@@ -179,6 +200,7 @@ export const api = {
       state.device_type_info = {}
       state.session_type_info = {}
       state.online_devices_dict = {}
+      state.current_session = {}
       state.teleop_session_info = {}
       state.sessions = []
     },
@@ -221,10 +243,17 @@ export const api = {
     },
     updateCurrentSession (state, session) {
       console.log('currentSession', session)
+      state.current_session = session
+    },
+    updateTeleopSession (state, session) {
+      console.log('updateTeleopSession', session)
       state.teleop_session_info = session
     },
     updateSessions (state, sessions) {
       state.sessions = sessions
+    },
+    updateDeviceRemoval (state, uuid) {
+      delete state.online_devices_dict[uuid]
     }
   }
 }

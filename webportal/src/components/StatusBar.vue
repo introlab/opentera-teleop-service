@@ -24,7 +24,7 @@
         <router-link to="/login">Login</router-link> |
         <router-link to="/stats">Stats</router-link>
       </div>
-      <button @click="closeSession">Disconnect</button>
+      <button @click="closeSession" :disabled="!inSession">Disconnect</button>
       <button @click="logoutButtonClicked" :disabled="loggedIn">Logout</button>
 
     </div>
@@ -48,7 +48,6 @@ export default {
   methods: {
     logoutButtonClicked () {
       console.log('logoutButtonClicked')
-
       this.$store.dispatch('auth/logout').then(response => {
         console.log('logged Out')
         this.$router.replace('/login')

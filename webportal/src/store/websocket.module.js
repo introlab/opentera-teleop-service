@@ -1,5 +1,5 @@
 import AuthService from '../services/opentera_api'
-import router from '../router'
+// import router from '../router'
 
 export const websocket = {
   namespaced: true,
@@ -71,15 +71,17 @@ export const websocket = {
           case 'type.googleapis.com/opentera.protobuf.JoinSessionEvent':
             console.log('******************** JoinSessionEvent', event)
             // Update state, is this the right way ?
-            state.teleop_session_info = event
+            // state.teleop_session_info = event
             // update router page
-            router.push('/session')
+            // router.push('/session')
+            this.dispatch('api/joinSessionWithEvent', event)
             break
 
           case 'type.googleapis.com/opentera.protobuf.StopSessionEvent':
             console.log('**************** StopSessionEvent', event)
-            state.teleop_session_info = {}
-            router.push('/')
+            // state.teleop_session_info = {}
+            // router.push('/')
+            this.dispatch('api/stopSessionWithEvent', event)
             break
 
           case 'type.googleapis.com/opentera.protobuf.DeviceEvent':
@@ -91,7 +93,8 @@ export const websocket = {
                 break
 
               case 'DEVICE_DISCONNECTED':
-                delete state.online_devices_dict[event.deviceUuid]
+                // delete state.online_devices_dict[event.deviceUuid]
+                this.dispatch('api/removeDeviceWithEvent', event)
                 break
 
               case 'DEVICE_STATUS_CHANGED':

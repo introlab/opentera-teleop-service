@@ -57,7 +57,7 @@ export const auth = {
         })
     },
     refreshToken ({ commit }) {
-      // console.log('dispatch auth/refreshToken')
+      console.log('dispatch auth/refreshToken')
       return AuthService.refreshToken(this.state.auth.user).then(
         token => {
           // console.log('new token obtained', token.refresh_token)
