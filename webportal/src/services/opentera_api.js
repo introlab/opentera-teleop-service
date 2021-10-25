@@ -19,16 +19,15 @@ class AuthService {
   }
 
   async logout (user) {
-    if (user) {
-      const response = await axios.get(API_BASE_URL + 'logout', {
-        headers: {
-          Authorization: 'OpenTera ' + user.user_token
-        }
-      })
-      return response.data
-    } else {
-      return Promise.reject(new Error('No user specified'))
+    if (!user) {
+      throw new Error('no user specified')
     }
+    const response = await axios.get(API_BASE_URL + 'logout', {
+      headers: {
+        Authorization: 'OpenTera ' + user.user_token
+      }
+    })
+    return response.data
   }
 
   async refreshToken (user) {

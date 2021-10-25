@@ -1,4 +1,4 @@
-import AuthService from '../services/opentera_auth'
+import AuthService from '../services/opentera_api'
 import router from '../router'
 
 // const user = JSON.parse(localStorage.getItem('user'))
