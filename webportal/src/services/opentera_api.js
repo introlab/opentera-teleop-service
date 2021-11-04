@@ -31,16 +31,15 @@ class AuthService {
   }
 
   async refreshToken (user) {
-    if (user) {
-      const response = await axios.get(API_BASE_URL + 'refresh_token', {
-        headers: {
-          Authorization: 'OpenTera ' + user.user_token
-        }
-      })
-      return response.data
-    } else {
-      return Promise.reject(new Error('No user specified'))
+    if (!user) {
+      throw new Error('no user specified')
     }
+    const response = await axios.get(API_BASE_URL + 'refresh_token', {
+      headers: {
+        Authorization: 'OpenTera ' + user.user_token
+      }
+    })
+    return response.data
   }
 
   createWebsocket (url) {
@@ -48,6 +47,9 @@ class AuthService {
   }
 
   async getUserInfo (user) {
+    if (!user) {
+      throw new Error('no user specified')
+    }
     const response = await axios.get(API_BASE_URL + 'users', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
@@ -61,6 +63,9 @@ class AuthService {
   }
 
   async getDeviceInfo (user, deviceUuid) {
+    if (!user) {
+      throw new Error('no user specified')
+    }
     const response = await axios.get(API_BASE_URL + 'devices', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
@@ -74,6 +79,9 @@ class AuthService {
   }
 
   async getOnlineDevices (user) {
+    if (!user) {
+      throw new Error('no user specified')
+    }
     const response = await axios.get(API_BASE_URL + 'devices/online', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
@@ -84,6 +92,9 @@ class AuthService {
   }
 
   async getServiceInfo (user) {
+    if (!user) {
+      throw new Error('no user specified')
+    }
     const response = await axios.get(API_BASE_URL + 'services', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
@@ -98,6 +109,9 @@ class AuthService {
   }
 
   async getDeviceTypeInfo (user) {
+    if (!user) {
+      throw new Error('no user specified')
+    }
     const response = await axios.get(API_BASE_URL + 'devicetypes', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
@@ -112,6 +126,9 @@ class AuthService {
   }
 
   async getSessionTypesInfo (user) {
+    if (!user) {
+      throw new Error('no user specified')
+    }
     const response = await axios.get(API_BASE_URL + 'sessiontypes', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
@@ -125,6 +142,9 @@ class AuthService {
   }
 
   async startSession (user, device, userInfo, sessionTypeInfo) {
+    if (!user) {
+      throw new Error('no user specified')
+    }
     console.log('startSession', user, device, userInfo, sessionTypeInfo)
     const response = await axios.post(API_BASE_URL + 'sessions/manager', {
       session_manage: {
@@ -158,6 +178,9 @@ class AuthService {
   }
 
   async stopSession (user, session) {
+    if (!user) {
+      throw new Error('no user specified')
+    }
     console.log('stopSession', user, session)
     const response = await axios.post(API_BASE_URL + 'sessions/manager', {
       session_manage: {
@@ -178,6 +201,9 @@ class AuthService {
   }
 
   async getAllSessions (user, userInfo) {
+    if (!user) {
+      throw new Error('no user specified')
+    }
     const response = await axios.get(API_BASE_URL + 'sessions', {
       headers: {
         Authorization: 'OpenTera ' + user.user_token
