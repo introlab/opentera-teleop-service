@@ -76,7 +76,15 @@ export const api = {
     getSessions ({ commit }) {
       return AuthService.getAllSessions(this.state.auth.user, this.state.api.user_info).then(
         sessions => {
-          commit('updateSessions', sessions)
+          const filteredSessions = []
+          // Filter sessions with only the right id_session_type
+          sessions.forEach(session => {
+            if (session.id_session_type === this.state.api.session_type_info.id_session_type) {
+              filteredSessions.push(session)
+            }
+          })
+
+          commit('updateSessions', filteredSessions)
         },
         error => {
           commit('updateSessions', [])

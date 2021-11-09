@@ -58,10 +58,12 @@ export const websocket = {
     websocketOnClose (state, websocket) {
       console.log('websocketOnClose')
       state.websocketState = 'disconnected'
+      this.dispatch('auth/logout')
     },
     websocketOnError (state, { websocket, error }) {
       console.log('websocketOnError', error)
       state.websocketState = 'disconnected'
+      this.dispatch('auth/logout')
     },
     websocketOnMessage (state, { websocket, jsonMessage }) {
       // console.log('websocketOnMessage', jsonMessage)
@@ -98,6 +100,7 @@ export const websocket = {
                 break
 
               case 'DEVICE_STATUS_CHANGED':
+                // TODO : Should update device status only ?
                 this.dispatch('api/getOnlineDevices')
                 break
             }

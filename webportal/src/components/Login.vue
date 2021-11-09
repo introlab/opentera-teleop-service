@@ -7,11 +7,11 @@
           <img src="@/assets/LogoOpenTera.png" alt="Logo">
           <div class="col-12">
             <label for="uname"><b>{{ $t('Username') }}</b></label>
-            <input type="text" :placeholder="$t('Enter Username')" class="form-control" v-model="user.username" required>
+            <input type="text" :placeholder="$t('Enter Username')" class="form-control" v-model="loginInfo.username" required>
           </div>
           <div class="col-12">
             <label for="psw"><b>{{ $t('Password') }}</b></label>
-            <input type="password" :placeholder="$t('Enter Password')" class="form-control" v-model="user.password" required>
+            <input type="password" :placeholder="$t('Enter Password')" class="form-control" v-model="loginInfo.password" required>
           </div>
           <button type="submit" class="btn btn-dark foat-end" @click=loginButtonClicked  :disabled="isDisabled" >{{$t('Login')}}</button>
         </form>
@@ -38,32 +38,27 @@ export default {
   methods: {
     loginButtonClicked () {
       console.log('buttonClicked')
-      this.handleLogin(this.user)
-    },
-    handleLogin (user) {
       this.loading = true
-      console.log('handleLogin with', user)
-      this.$store.dispatch('auth/login', user).then(
+      this.$store.dispatch('auth/login', this.loginInfo).then(
         (user) => {
-          console.log('handleLogin return', user)
-          this.password = ''
+          this.loginInfo.password = ''
         },
         (error) => {
           this.lastError = error
-          this.password = ''
+          this.loginInfo.password = ''
         })
     }
   },
   data () {
     return {
-      user: { username: '', password: '' },
+      loginInfo: { username: '', password: '' },
       loading: false,
       lastError: null
     }
   },
   computed: {
     isDisabled () {
-      return this.user.username.length === 0 || this.user.password.length === 0
+      return this.loginInfo.username.length === 0 || this.loginInfo.password.length === 0
     },
     loggedIn () {
       return this.$store.state.auth.status.loggedIn
@@ -77,6 +72,7 @@ export default {
   },
   created () {
     if (this.loggedIn) {
+      console.log('Already logged in')
       this.$router.push('/')
     }
   }
