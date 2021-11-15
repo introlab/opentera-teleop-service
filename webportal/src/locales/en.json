@@ -1,8 +1,11 @@
 {
-  "message": "hello i18n !!",
   "Username": "Username",
   "Password": "Password",
   "Login": "Login",
   "Enter Username": "Enter Username",
-  "Enter Password": "Enter Password"
+  "Enter Password": "Enter Password",
+  "Robot Teleoperation Service": "Robot Teleoperation Service",
+  "Project Page": "Project Page",
+  "Powered By": "Powered By",
+  "Acknowledgements": "Acknowledgements"
 }
