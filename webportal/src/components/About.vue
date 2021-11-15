@@ -7,21 +7,21 @@
             </div>
 
             <div class="row mt-1">
-                  <h3 class="mt-4">Project Page</h3>
+                  <h3 class="mt-4 bg-info">Project Page</h3>
                   <div class="col-md-12">
                         <a href="https://github.com/introlab/opentera-teleop-service" target="window" class="link-info">
                         <img src="@/assets/GitHub.png" alt="GitHub" class="img-fluid mx-2" width="300">
                         </a>
                   </div>
 
-                  <h3 class="mt-4">Powered By</h3>
+                  <h3 class="mt-4 bg-info">Powered By</h3>
                   <div class="col-md-12">
                   <a href="https://github.com/introlab/opentera" target="window" class="link-info">
                   <img src="@/assets/LogoOpenTera.png" alt="3IT" class="img-fluid mx-2" width="200">
                   </a>
                   </div>
 
-                  <h3 class="mt-5">Acknowledgements</h3>
+                  <h3 class="mt-5 bg-info">Acknowledgements</h3>
                   <div class="col-md-12 mt-4">
                         <a href="https://agewell-nce.ca/" target="window" class="link-info">
                         <img src="@/assets/AgeWell.png" alt="3IT" class="img-fluid mx-4" width="300">
