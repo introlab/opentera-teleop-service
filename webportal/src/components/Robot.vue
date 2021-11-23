@@ -11,7 +11,7 @@
               <li class="list-group-item"><b>Batt:</b> {{batteryVoltage}} V, {{batteryCurrent}} A</li>
               <li class="list-group-item"><b>MEM:</b>{{memUsage}}% <b>CPU:</b> {{cpuUsage}}% <b>HDD:</b>{{diskUsage}}%</li>
               <li class="list-group-item"><b>WiFi:</b> {{wifiNetwork}} {{wifiStrength}}% ({{ipAddress}})</li>
-              <li class="list-group-item"><b>Charging:</b> {{statusObject.is_charging}}</li>
+              <li class="list-group-item"><b>Charging:</b> {{isCharging}}</li>
               <li class="list-group-item"><b>Last Update:</b> {{timestamp}}</li>
           </ul>
 
@@ -19,6 +19,9 @@
             <button class="btn btn-primary" @click="buttonClicked" :disabled="isBusy"> Connect </button>
           </div>
     </div>
+    <!--
+    {{statusObject}}
+    -->
   </div>
 </template>
 
@@ -42,8 +45,6 @@ export default {
           console.log('Robot errorSession', error)
         }
       )
-
-      // this.$router.push('/session')
     }
   },
   computed: {
@@ -66,56 +67,63 @@ export default {
     },
     memUsage () {
       try {
-        return Math.round(this.statusObject.mem_usage)
+        return Math.round(this.statusObject.memUsage)
       } catch (err) {
         return 0
       }
     },
     cpuUsage () {
       try {
-        return Math.round(this.statusObject.cpu_usage)
+        return Math.round(this.statusObject.cpuUsage)
       } catch (err) {
         return 0
       }
     },
     diskUsage () {
       try {
-        return Math.round(this.statusObject.disk_usage)
+        return Math.round(this.statusObject.diskUsage)
       } catch (err) {
         return 0
       }
     },
     batteryVoltage () {
       try {
-        return this.statusObject.battery_voltage
+        return this.statusObject.batteryVoltage
       } catch (err) {
         return 0
       }
     },
     batteryCurrent () {
       try {
-        return this.statusObject.battery_current
+        return this.statusObject.batteryCurrent
+      } catch (err) {
+        return 0
+      }
+    },
+    isCharging () {
+      try {
+        return this.statusObject.isCharging
       } catch (err) {
         return 0
       }
     },
     wifiNetwork () {
       try {
-        return this.statusObject.wifi_network
+        return this.statusObject.wifiNetwork
       } catch (err) {
         return 0
       }
     },
     wifiStrength () {
       try {
-        return Math.round(this.statusObject.wifi_strength)
+        return Math.round(this.statusObject.wifiStrength)
       } catch (err) {
         return 0
       }
     },
     ipAddress () {
       try {
-        return this.statusObject.local_ip
+        return this.statusObject.localIp
       } catch (err) {
         return 0
       }
