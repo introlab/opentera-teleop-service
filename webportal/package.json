@@ -11,7 +11,7 @@
   "dependencies": {
     "@jobinsjp/vue3-datatable": "^1.0.12",
     "@popperjs/core": "^2.10.2",
-    "axios": "^0.21.4",
+    "axios": "^0.24.0",
     "bootstrap": "^5.1.3",
     "core-js": "^3.6.5",
     "jquery": "^3.6.0",

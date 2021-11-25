@@ -73,6 +73,16 @@ export const auth = {
     }
   },
   getters: {
+    lastError: (state) => {
+      if (state.status.error) {
+        return state.status.error.request.response
+      } else {
+        return ''
+      }
+    },
+    isLoggedIn: (state) => {
+      return state.status.loggedIn
+    }
   },
   mutations: {
     loginSuccess (state, user) {

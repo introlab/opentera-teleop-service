@@ -6,16 +6,21 @@ const API_BASE_URL = process.env.VUE_APP_OPENTERA_API_URL
 
 class AuthService {
   async login (loginInfo) {
+    console.log('login', loginInfo)
     const response = await axios.get(API_BASE_URL + 'login', {
       auth: {
         username: loginInfo.username,
         password: loginInfo.password
       }
     })
-    if (response.data.user_token) {
-      localStorage.setItem('user', JSON.stringify(response.data))
+    if (response.status === 200) {
+      if (response.data.user_token) {
+        localStorage.setItem('user', JSON.stringify(response.data))
+      }
+      return response.data
+    } else {
+      return null
     }
-    return response.data
   }
 
   async logout (user) {

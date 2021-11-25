@@ -16,8 +16,8 @@
           <button type="submit" class="btn btn-dark foat-end" @click=loginButtonClicked  :disabled="isDisabled" >{{$t('Login')}}</button>
         </form>
         </div>
-        <div class="alert alert-danger" v-if="error">
-          {{ error.response.data }}
+        <div class="alert alert-danger" v-if="hasError">
+          {{ lastError }}
         </div>
       </div>
     </div>
@@ -30,6 +30,9 @@
 // import { mapActions } from 'vuex'
 // import { mapMutations } from 'vuex'
 // import { mapGetters } from 'vuex'
+
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters } = createNamespacedHelpers('auth')
 
 export default {
   name: 'Login',
@@ -44,8 +47,9 @@ export default {
           this.loginInfo.password = ''
         },
         (error) => {
-          this.lastError = error
+          console.log('error dispatch login', error.response)
           this.loginInfo.password = ''
+          this.hasError = true
         })
     }
   },
@@ -53,26 +57,23 @@ export default {
     return {
       loginInfo: { username: '', password: '' },
       loading: false,
-      lastError: null
+      hasError: false
     }
   },
   computed: {
     isDisabled () {
       return this.loginInfo.username.length === 0 || this.loginInfo.password.length === 0
     },
-    loggedIn () {
-      return this.$store.state.auth.status.loggedIn
-    },
-    error () {
-      return this.$store.state.auth.status.error
-    }
+    // mix the getters into computed with object spread operator
+    ...mapGetters(['lastError', 'isLoggedIn'])
   },
   mounted () {
     console.log('mounted')
   },
   created () {
-    if (this.loggedIn) {
+    if (this.isLoggedIn) {
       console.log('Already logged in')
+      this.hasError = false
       this.$router.push('/')
     }
   }
