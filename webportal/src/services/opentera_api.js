@@ -17,10 +17,9 @@ class AuthService {
       if (response.data.user_token) {
         localStorage.setItem('user', JSON.stringify(response.data))
       }
-      return response.data
-    } else {
-      return null
     }
+    console.log('login', response.data)
+    return response.data
   }
 
   async logout (user) {

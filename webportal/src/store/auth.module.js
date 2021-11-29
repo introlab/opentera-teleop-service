@@ -14,7 +14,9 @@ export const auth = {
     login ({ commit }, loginInfo) {
       return AuthService.login(loginInfo).then(
         user => {
-          console.log('loginSuccess')
+          console.log('login returned', user)
+
+          // This needs to be done before dispatching other actions.
           commit('loginSuccess', user)
 
           Promise.all([
@@ -32,13 +34,13 @@ export const auth = {
             router.replace('/')
           })
 
-          return Promise.resolve(user)
+          // return Promise.resolve(user)
         },
         error => {
           console.log('action login failure')
           // console.log('loginFailure', error)
           commit('loginFailure', error)
-          return Promise.reject(error)
+          // return Promise.reject(error)
         }
       )
     },
@@ -105,8 +107,8 @@ export const auth = {
       state.user = {}
 
       // Close web socket
-      this.dispatch('websocket/logout')
       this.dispatch('api/logout')
+      this.dispatch('websocket/logout')
 
       if (state.timer_interval) {
         clearInterval(state.timer_interval)

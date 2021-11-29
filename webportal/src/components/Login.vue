@@ -39,9 +39,13 @@ export default {
   props: {
   },
   methods: {
-    loginButtonClicked () {
+    loginButtonClicked (event) {
+      // This is required to avoid the default form submit
+      event.preventDefault()
+
       console.log('buttonClicked')
       this.loading = true
+
       this.$store.dispatch('auth/login', this.loginInfo).then(
         (user) => {
           this.loginInfo.password = ''
