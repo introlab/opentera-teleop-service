@@ -10,7 +10,7 @@ class TeleopServiceWebRTCModule(WebRTCModule):
         # Default init
         WebRTCModule.__init__(self, config)
 
-    def launch_node(self, port, key, owner, users, participants, devices):
+    def launch_signaling_server(self, port, key, owner, users, participants, devices, parameters):
 
         # Read specific configurations
         # parser.add_argument('--port', type=int, help='Choose the port', default=8080)
@@ -48,7 +48,8 @@ class TeleopServiceWebRTCModule(WebRTCModule):
 
         return False
 
-    def create_webrtc_session(self, room_name, owner_uuid, users: list, participants: list, devices: list):
+    def create_webrtc_session(self, room_name, owner_uuid, users: list, participants: list, devices: list, parameters: dict):
+        print('create_webrtc_sessions')
         # make sure we kill sessions already started with this owner_uuid or room name
         self.terminate_webrtc_session_with_owner_uuid(owner_uuid)
         self.terminate_webrtc_session_with_room_name(room_name)
@@ -75,8 +76,8 @@ class TeleopServiceWebRTCModule(WebRTCModule):
                           + '/webrtc_teleop/' + str(port) + '/socket.io?pwd=' \
                           + key + '&port=' + str(port) + '&device=1'
 
-            if self.launch_node(port=port, key=key, owner=owner_uuid,
-                                users=users, participants=participants, devices=devices):
+            if self.launch_signaling_server(port=port, key=key, owner=owner_uuid,
+                                users=users, participants=participants, devices=devices, parameters=parameters):
                 result = {'url_users': url_users,
                           'url_participants': url_participants,
                           'url_devices': url_devices,
@@ -85,9 +86,8 @@ class TeleopServiceWebRTCModule(WebRTCModule):
                           'owner': owner_uuid,
                           'users': users,
                           'participants': participants,
-                          'devices': devices}
-
-                print(result)
+                          'devices': devices,
+                          'parameters': parameters}
 
                 def redis_publish_task():
                     # Send ok via redis
