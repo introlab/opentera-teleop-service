@@ -5,10 +5,11 @@ import opentera.messages.python as messages
 import sys
 import uuid
 import json
+from json.decoder import JSONDecodeError
 
 from flask_babel import gettext
 
-# Configuration 
+# Configuration
 from ConfigManager import ConfigManager
 from opentera.redis.RedisClient import RedisClient
 from opentera.redis.RedisVars import RedisVars
@@ -53,21 +54,27 @@ if __name__ == '__main__':
 
     # Retrieve configuration from redis
     redis_client = RedisClient(config_man.redis_config)
-   
-    # Get service UUID
-    service_info = json.loads(redis_client.redisGet(RedisVars.RedisVar_ServicePrefixKey + config_man.service_config['name']))
 
-    print('**************** service_info : ', service_info)
+    # Get service UUID
+    service_info = redis_client.redisGet(RedisVars.RedisVar_ServicePrefixKey +
+                                                 config_man.service_config['name'])
 
     if service_info is None:
         sys.stderr.write('Error: Unable to get service info from OpenTera Server - is the server running and config '
                          'correctly set in this service?')
         exit(1)
-    
-    if 'service_uuid' not in service_info:
-        sys.stderr.write('OpenTera Server didn\'t return a valid service UUID - aborting.')
+
+    # Get service UUID
+    try:
+        service_info = json.loads(service_info)
+        if 'service_uuid' not in service_info:
+            sys.stderr.write('OpenTera Server didn\'t return a valid service UUID - aborting.')
+            exit(1)
+    except JSONDecodeError as e:
+        sys.stderr.write('Invalid JSON for service configuration', e)
         exit(1)
 
+    print('**************** service_info : ', service_info)
     # Update service_info in configuration
     config_man.service_config['ServiceUUID'] = service_info['service_uuid']
     config_man.service_config['port'] = service_info['service_port']
