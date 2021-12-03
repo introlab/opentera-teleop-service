@@ -85,6 +85,7 @@ export const api = {
           })
 
           commit('updateSessions', filteredSessions)
+          return Promise.resolve(filteredSessions)
         },
         error => {
           commit('updateSessions', [])
@@ -138,6 +139,7 @@ export const api = {
       return AuthService.getDeviceInfo(this.state.auth.user, deviceUuid).then(
         deviceInfo => {
           commit('updateDeviceInfo', deviceInfo)
+          return Promise.resolve(deviceInfo)
         },
         error => {
           commit('updateDeviceInfo', {})
