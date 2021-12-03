@@ -30,17 +30,16 @@ export const auth = {
             this.dispatch('api/getSessionTypeInfo'),
             // Get User info
             this.dispatch('api/getUserInfo')
-          ]).finally(() => {
+          ]).then(() => {
             router.replace('/')
+          }).catch((error) => {
+            console.log('Error in login action', error)
+            commit('logout')
           })
-
-          // return Promise.resolve(user)
         },
         error => {
           console.log('action login failure')
-          // console.log('loginFailure', error)
           commit('loginFailure', error)
-          // return Promise.reject(error)
         }
       )
     },
@@ -50,12 +49,10 @@ export const auth = {
         retcode => {
           commit('logout')
           console.log('logout')
-          return Promise.resolve(retcode)
         },
         error => {
           commit('logout')
           console.log('logout error', error)
-          return Promise.reject(error)
         })
     },
     refreshToken ({ commit }) {
@@ -64,12 +61,10 @@ export const auth = {
         token => {
           // console.log('new token obtained', token.refresh_token)
           commit('updateToken', token.refresh_token)
-          return Promise.resolve(token.refresh_token)
         },
         error => {
           console.log('Error refreshing token', error)
           commit('logout')
-          return Promise.reject(error)
         }
       )
     }

@@ -11,6 +11,9 @@ class AuthService {
       auth: {
         username: loginInfo.username,
         password: loginInfo.password
+      },
+      params: {
+        with_websocket: true
       }
     })
     if (response.status === 200) {
