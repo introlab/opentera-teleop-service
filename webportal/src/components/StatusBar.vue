@@ -19,13 +19,15 @@
       Service: {{serviceInfo.id_service}} DeviceType: {{deviceTypeInfo.id_device_type}} SessionType: {{sessionTypeInfo}}
       -->
       <div id="nav">
-        <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link> |
-        <router-link to="/login">Login</router-link> |
-        <router-link to="/stats">Stats</router-link>
+        <table class="table"><tr>
+        <th><router-link to="/" v-if="loggedIn">{{ $t('Home') }}</router-link></th>
+        <th><router-link to="/about">{{ $t('About') }}</router-link></th>
+        <th><router-link to="/login" v-if="!loggedIn">{{ $t('Login') }}</router-link></th>
+        <th><router-link to="/stats" v-if="loggedIn">{{ $t('Sessions') }}</router-link></th>
+        </tr></table>
       </div>
-      <button @click="closeSession" :disabled="!inSession">Disconnect</button>
-      <button @click="logoutButtonClicked" :disabled="loggedIn">Logout</button>
+      <button @click="closeSession" :disabled="!inSession" v-if="inSession">{{ $t('Stop Session') }}</button>
+      <button @click="logoutButtonClicked" :disabled="!loggedIn" v-if="loggedIn && !inSession">{{ $t('Logout') }}</button>
 
     </div>
   </nav>
@@ -46,14 +48,14 @@ export default {
   components: { LocaleChanger, ElapsedSessionTime },
   props: {},
   methods: {
-    logoutButtonClicked () {
+    logoutButtonClicked (event) {
       console.log('logoutButtonClicked')
       this.$store.dispatch('auth/logout').then(response => {
         console.log('logged Out')
         this.$router.replace('/login')
       })
     },
-    closeSession () {
+    closeSession (event) {
       console.log('closeSession')
       this.$store.dispatch('api/stopSession').then(response => {
         this.$router.replace('/')
@@ -62,7 +64,7 @@ export default {
   },
   computed: {
     loggedIn () {
-      return !this.$store.state.auth.status.loggedIn
+      return this.$store.state.auth.status.loggedIn
     },
     ...mapGetters(['userName', 'serviceInfo', 'deviceTypeInfo', 'sessionTypeInfo', 'inSession', 'sessionInfo', 'allSessions'])
   }

@@ -8,5 +8,15 @@
   "Project Page": "Project Page",
   "Powered By": "Powered By",
   "Acknowledgements": "Acknowledgements",
-  "Loading": "Loading"
+  "Loading": "Loading",
+  "Home": "Home",
+  "About": "About",
+  "Sessions": "Sessions",
+  "Stop Session": "Stop Session",
+  "Logout": "Logout",
+  "Connecting": "Connecting",
+  "Connect": "Connect",
+  "Last Update": "Last Update",
+  "Charging": "Charging",
+  "Not Charging": "Discharging"
 }
