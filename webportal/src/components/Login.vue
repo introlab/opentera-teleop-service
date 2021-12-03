@@ -11,7 +11,7 @@
           </div>
           <div class="col-12">
             <label for="psw"><b>{{ $t('Password') }}</b></label>
-            <input id="opentera-login-password" autocomplete="password" type="password" :placeholder="$t('Enter Password')" class="form-control" v-model="loginInfo.password" required>
+            <input id="opentera-login-password" autocomplete="current-password" type="password" :placeholder="$t('Enter Password')" class="form-control" v-model="loginInfo.password" required>
           </div>
           <button type="submit" class="btn btn-dark foat-end" @click=loginButtonClicked  :disabled="isDisabled" >{{$t('Login')}}</button>
         </form>
