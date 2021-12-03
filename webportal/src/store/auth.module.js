@@ -32,14 +32,17 @@ export const auth = {
             this.dispatch('api/getUserInfo')
           ]).then(() => {
             router.replace('/')
+            return Promise.resolve(user)
           }).catch((error) => {
             console.log('Error in login action', error)
             commit('logout')
+            return Promise.reject(error)
           })
         },
         error => {
           console.log('action login failure')
           commit('loginFailure', error)
+          return Promise.reject(error)
         }
       )
     },
@@ -49,10 +52,12 @@ export const auth = {
         retcode => {
           commit('logout')
           console.log('logout')
+          return Promise.resolve(retcode)
         },
         error => {
           commit('logout')
           console.log('logout error', error)
+          return Promise.reject(error)
         })
     },
     refreshToken ({ commit }) {
@@ -61,10 +66,12 @@ export const auth = {
         token => {
           // console.log('new token obtained', token.refresh_token)
           commit('updateToken', token.refresh_token)
+          return Promise.resolve(token)
         },
         error => {
           console.log('Error refreshing token', error)
           commit('logout')
+          return Promise.reject(error)
         }
       )
     }
@@ -72,7 +79,7 @@ export const auth = {
   getters: {
     lastError: (state) => {
       if (state.status.error) {
-        return state.status.error.request.response
+        return state.status.error.response.data
       } else {
         return ''
       }

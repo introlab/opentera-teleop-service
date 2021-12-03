@@ -216,7 +216,8 @@ class AuthService {
         Authorization: 'OpenTera ' + user.user_token
       },
       params: {
-        id_user: userInfo.id_user
+        id_user: userInfo.id_user,
+        limit: 50
       }
     })
     console.log('getAllSessions ', response.data)
