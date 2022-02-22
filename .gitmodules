@@ -1,3 +1,6 @@
 [submodule "submodules/opentera-webrtc"]
 	path = submodules/opentera-webrtc
 	url = ../opentera-webrtc.git
+[submodule "submodules/opentera-webrtc-teleop-frontend"]
+	path = submodules/opentera-webrtc-teleop-frontend
+	url = ../opentera-webrtc-teleop-frontend.git
