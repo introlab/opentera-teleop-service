@@ -11,6 +11,9 @@ class AuthService {
       auth: {
         username: loginInfo.username,
         password: loginInfo.password
+      },
+      params: {
+        with_websocket: true
       }
     })
     if (response.status === 200) {
@@ -213,7 +216,8 @@ class AuthService {
         Authorization: 'OpenTera ' + user.user_token
       },
       params: {
-        id_user: userInfo.id_user
+        id_user: userInfo.id_user,
+        limit: 50
       }
     })
     console.log('getAllSessions ', response.data)

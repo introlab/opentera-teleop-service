@@ -11,12 +11,16 @@
               <li class="list-group-item"><b>Batt:</b> {{batteryVoltage}} V, {{batteryCurrent}} A</li>
               <li class="list-group-item"><b>MEM:</b>{{memUsage}}% <b>CPU:</b> {{cpuUsage}}% <b>HDD:</b>{{diskUsage}}%</li>
               <li class="list-group-item"><b>WiFi:</b> {{wifiNetwork}} {{wifiStrength}}% ({{ipAddress}})</li>
-              <li class="list-group-item"><b>Charging:</b> {{isCharging}}</li>
-              <li class="list-group-item"><b>Last Update:</b> {{timestamp}}</li>
+              <li class="list-group-item" v-if="isCharging"><b>{{$t('Charging')}}</b></li>
+              <li class="list-group-item" v-else><b>{{$t('Not Charging')}}</b></li>
+              <li class="list-group-item"><b>{{$t('Last Update')}}:</b> {{timestamp}}</li>
           </ul>
 
           <div class="card-footer text-muted">
-            <button class="btn btn-primary" @click="buttonClicked" :disabled="isBusy"> Connect </button>
+             <div class="alert alert-info" v-if="connecting">
+            {{$t('Connecting')}}...
+            </div>
+            <button class="btn btn-primary" @click="buttonClicked" :disabled="isBusy" v-if="!connecting"> {{$t('Connect')}} </button>
           </div>
     </div>
     <!--
@@ -37,14 +41,21 @@ export default {
     buttonClicked () {
       console.log('Robot:buttonClicked')
       // Start a session
+      this.connecting = true
       this.$store.dispatch('api/startSession', this.data).then(
         (session) => {
           console.log('Robot newSession:', session)
         },
         (error) => {
           console.log('Robot errorSession', error)
+          this.connecting = false
         }
       )
+    }
+  },
+  data: function () {
+    return {
+      connecting: false
     }
   },
   computed: {
@@ -52,10 +63,11 @@ export default {
       return this.data.device_busy
     },
     timestamp () {
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }
       try {
-        return new Date(this.data.device_status.status.timestamp * 1000).toString()
+        return new Date(this.data.device_status.status.timestamp * 1000).toLocaleString(undefined, options)
       } catch (err) {
-        return new Date().toString()
+        return new Date().toLocaleString(undefined, options)
       }
     },
     statusObject () {

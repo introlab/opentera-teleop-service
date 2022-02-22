@@ -3,18 +3,21 @@
     <div class="row">
       <div class="col-md-4 offset-md-4">
         <div class="login-form bg-light mt-4 p-4">
-        <form class="row g-3">
+        <form class="row g-3" v-on:submit.prevent>
           <img src="@/assets/LogoOpenTera.png" alt="Logo">
           <div class="col-12">
             <label for="uname"><b>{{ $t('Username') }}</b></label>
-            <input type="text" :placeholder="$t('Enter Username')" class="form-control" v-model="loginInfo.username" required>
+            <input id="opentera-login-username" autocomplete="username" type="text" :placeholder="$t('Enter Username')" class="form-control" v-model="loginInfo.username" required>
           </div>
           <div class="col-12">
             <label for="psw"><b>{{ $t('Password') }}</b></label>
-            <input type="password" :placeholder="$t('Enter Password')" class="form-control" v-model="loginInfo.password" required>
+            <input id="opentera-login-password" autocomplete="current-password" type="password" :placeholder="$t('Enter Password')" class="form-control" v-model="loginInfo.password" required>
           </div>
           <button type="submit" class="btn btn-dark foat-end" @click=loginButtonClicked  :disabled="isDisabled" >{{$t('Login')}}</button>
         </form>
+        </div>
+        <div class="alert alert-info" v-if="loading">
+          {{$t('Loading')}}...
         </div>
         <div class="alert alert-danger" v-if="hasError">
           {{ lastError }}
@@ -39,22 +42,23 @@ export default {
   props: {
   },
   methods: {
-    loginButtonClicked (event) {
+    async loginButtonClicked (event) {
       // This is required to avoid the default form submit
       event.preventDefault()
 
       console.log('buttonClicked')
       this.loading = true
 
-      this.$store.dispatch('auth/login', this.loginInfo).then(
-        (user) => {
-          this.loginInfo.password = ''
-        },
-        (error) => {
-          console.log('error dispatch login', error.response)
-          this.loginInfo.password = ''
-          this.hasError = true
-        })
+      try {
+        await this.$store.dispatch('auth/login', this.loginInfo)
+        this.loading = true
+      } catch (error) {
+        this.hasError = true
+        this.lastError = error.message
+        this.loading = false
+        this.loginInfo.username = ''
+        this.loginInfo.password = ''
+      }
     }
   },
   data () {
