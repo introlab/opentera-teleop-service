@@ -33,7 +33,7 @@ class TeleopService(BaseWebRTCService):
         self.flaskModuleService = self.flaskModule.create_service()
 
         # Create WebRTCModule
-        self.webRTCModule = TeleopServiceWebRTCModule(config_man)
+        self.webRTCModule = TeleopServiceWebRTCModule(config_man, self)
 
     def notify_service_messages(self, pattern, channel, message):
         pass
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     # Get service UUID
     service_info = redis_client.redisGet(RedisVars.RedisVar_ServicePrefixKey +
-                                                 config_man.service_config['name'])
+                                         config_man.service_config['name'])
 
     if service_info is None:
         sys.stderr.write('Error: Unable to get service info from OpenTera Server - is the server running and config '

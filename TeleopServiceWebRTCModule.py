@@ -5,12 +5,14 @@ import subprocess
 from twisted.internet import task
 import threading
 import sys
+from urllib.parse import quote
 
 
 class TeleopServiceWebRTCModule(WebRTCModule):
-    def __init__(self, config: ServiceConfigManager):
+    def __init__(self, config: ServiceConfigManager, service=None):
         # Default init
         WebRTCModule.__init__(self, config)
+        self.service = service
 
     def poll_signaling_server_process(self, process, port: int, key: str, owner: str, session_info: dict):
         # This function is running on a thread.
@@ -80,21 +82,40 @@ class TeleopServiceWebRTCModule(WebRTCModule):
         print(self.module_name + ' - Should create WebRTC session with name:', room_name, port, key,
               session_info['session_parameters'])
 
-        if port:
+        if port and len(session_info['session_devices']) == 1:
+
+            # Get robot device
+            robot_device = session_info['session_devices'][0]
+
+            # Get robot device info
+            response = self.service.get_from_opentera('/api/service/devices',
+                                                      {'device_uuid': robot_device,
+                                                       'with_type_info': True,
+                                                       'with_subtype_info': True})
+
+            if response.status_code != 200:
+                return False, {'error': 'Unable to get device info.'}
+
+            response_info = response.json()
+            if 'device_subtype_name' in response_info['device_subtype_info']:
+                robot_device_subtype_string = quote(response_info['device_subtype_info']['device_subtype_name'])
+            else:
+                robot_device_subtype_string = quote('default')
+
             url_users = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                         + str(self.config.webrtc_config['external_port']) \
                         + '/webrtc_teleop/' + str(port) + '/#user?pwd=' \
-                        + key + '&port=' + str(port) + '&user=1'
+                        + key + '&port=' + str(port) + '&user=1' + '&robot=' + robot_device_subtype_string
 
             url_participants = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                                + str(self.config.webrtc_config['external_port']) \
                                + '/webrtc_teleop/' + str(port) + '/#participant?pwd=' + key \
-                               + '&port=' + str(port) + '&participant=1'
+                               + '&port=' + str(port) + '&participant=1' + '&robot=' + robot_device_subtype_string
 
             url_devices = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                           + str(self.config.webrtc_config['external_port']) \
                           + '/webrtc_teleop/' + str(port) + '/socket.io?pwd=' \
-                          + key + '&port=' + str(port) + '&device=1'
+                          + key + '&port=' + str(port) + '&device=1' + '&robot=' + robot_device_subtype_string
 
             # No need for parameters for signaling server, but will be useful to store session information
             if self.launch_signaling_server(port=port, key=key, owner=owner_uuid,
