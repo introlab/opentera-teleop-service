@@ -36,7 +36,7 @@ authorizations = {
 flask_app = Flask("TeleopService")
 
 # Translations
-babel = Babel(flask_app)
+babel = Babel(flask_app, default_domain='teleop_service')
 
 # API
 # TODO - Fix auth
@@ -203,7 +203,7 @@ class FlaskModule(BaseModule):
         assets_resource.contentTypes['.js'] = 'text/javascript'
         assets_resource.contentTypes['.css'] = 'text/css'
         assets_resource.forbidden = False
-    
+
 
         # the path "/assets" served by our File stuff and
         root_resource = WSGIRootResource(wsgi_resource, {b'static': static_resource, b'assets': assets_resource})

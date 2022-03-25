@@ -17,15 +17,15 @@
 	    "password": ""
 	},
 	"WebRTC": {
-	    "hostname": "127.0.0.1",
+	    "hostname": "telesante.3it.usherbrooke.ca",
 	    "external_port": 40075,
-	    "local_base_port": 9090,
+	    "local_base_port": 9095,
 	    "max_sessions": 10,
-	    "working_directory": "submodules/opentera-webrtc/signaling-server",
-	    "executable": "../../../venv/bin/python",
+	    "working_directory": ".",
+	    "executable": "venv/bin/python",
 	    "script": "signaling_server.py",
 	    "arguments": "port;key",
-		"ice_servers": "../../../config/iceServers.json",
-		"static_folder": "../../../signaling-static"
+		"ice_servers": "config/iceServers.json",
+		"static_folder": "submodules/opentera-webrtc-teleop-frontend/teleop-vue/dist"
 	}
 }
