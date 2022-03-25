@@ -90,15 +90,19 @@ class TeleopServiceWebRTCModule(WebRTCModule):
             # Get robot device info
             response = self.service.get_from_opentera('/api/service/devices',
                                                       {'device_uuid': robot_device,
-                                                       'with_type_info': True,
-                                                       'with_subtype_info': True})
+                                                       'with_device_type': True,
+                                                       'with_device_subtype': True})
 
             if response.status_code != 200:
                 return False, {'error': 'Unable to get device info.'}
 
             response_info = response.json()
-            if 'device_subtype_name' in response_info['device_subtype_info']:
-                robot_device_subtype_string = quote(response_info['device_subtype_info']['device_subtype_name'])
+
+            if not 'device_subtype' in response_info:
+                return False,  {'error': 'Unable to get device subtype info.'}
+
+            if 'device_subtype_name' in response_info['device_subtype']:
+                robot_device_subtype_string = quote(response_info['device_subtype']['device_subtype_name'])
             else:
                 robot_device_subtype_string = quote('default')
 
