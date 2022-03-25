@@ -10,50 +10,51 @@ git clone https://github.com/introlab/opentera-teleop-service.git --recurse-subm
 
 # Go to opentera-teleop-service directory
 cd opentera-teleop-service directory
+```
 
+### Setup Virtual Environment with Python venv
+
+```bash
 # Create a virtual environment
 python3 -m venv venv
-
 # Enable venv
 source venv/bin/activate
-
 # Install requirements (service)
 pip install -r requirements.txt
-# Install requirements (signaling-server)
-pip install -r submodules/opentera-webrtc/signaling-server/requirements.txt
+# Install requirements (signaling-server, opentera)
+pip install -r submodules/opentera-webrtc-teleop-frontend/teleop-vue/submodules/opentera-webrtc/requirements.txt
+pip install -r submodules/opentera-webrtc-teleop-frontend/teleop-vue/submodules/opentera-webrtc/signaling-server/requirements.txt
 
 ```
 
-## Setup Web Portal
+### OR Setup Virtual Environment with conda
+```bash
+./create_conda_venv.sh
+```
+
+### Build Service with CMake
+
+> Modify setup according to your configuration
 
 ```bash
-# Go to the webportal directory
-cd webportal
-# Install dependencies
-npm install
-# Modify setup according to your configuration
-vi .env.production
-# Build package
-npm run build
+vi webportal/.env.production
+```
+
+> This command will compile opentera-webrtc python library, build webportal and teleop-frontend
+```bash
+mkdir build
+cd build
+cmake ../
+make
+
 # Create a symlink to the index in the static directory
 cd ../static
 ln -s ../webportal/dist/index.html index.html
 ```
 
-## Setup Teleop Interface
-```bash
-# Go to the teleop-vue directory
-cd submodules/opentera-webrtc-teleop-frontend/teleop-vue
-# Install dependencies
-npm install
-# Build package
-npm run build
-# VUE3.js interface should be located in the dist directory
-```
-
 ## OpenTera Server Configuration
 
->Make sure the RobotTeleOperationService is activated in the OpenTera Server.
+> Make sure the RobotTeleOperationService is activated in the OpenTera Server.
 ```
 Port: 4080
 URL : /
