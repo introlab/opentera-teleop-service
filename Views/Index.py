@@ -16,7 +16,8 @@ class Index(MethodView):
 
     def get(self):
         try:
-            return flask_app.send_static_file('../webportal/dist/index.html')
-        except NotFound:
+            return flask_app.send_static_file('index.html')
+        except NotFound as e:
+            print(e)
             # If the file was not found, send the default index file
             return flask_app.send_static_file('default_index.html')
