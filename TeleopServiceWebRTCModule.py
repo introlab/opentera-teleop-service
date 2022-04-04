@@ -2,11 +2,11 @@ from opentera.services.modules.WebRTCModule import WebRTCModule
 from opentera.services.ServiceConfigManager import ServiceConfigManager
 import os
 import subprocess
-from twisted.internet import task
+from twisted.internet import task, reactor
 import threading
 import sys
 from urllib.parse import quote
-
+import time
 
 class TeleopServiceWebRTCModule(WebRTCModule):
     def __init__(self, config: ServiceConfigManager, service=None):
@@ -15,22 +15,29 @@ class TeleopServiceWebRTCModule(WebRTCModule):
         self.service = service
 
     def poll_signaling_server_process(self, process, port: int, key: str, owner: str, session_info: dict):
+        print('poll_signaling_server_process')
         # This function is running on a thread.
         while process.poll() is None:
             stdout_line = process.stdout.readline()
             # Check for signaling server ready
-            if b'======== Running on http://0.0.0.0:' in stdout_line:
-                # The Base Service will receive this message and send invitations
-                print('Publish Ready!')
-                self.redis.publish('webrtc.' + key, 'Ready!')
-            print(stdout_line)
+            if stdout_line:
+                print(stdout_line)
+                if b'======== Running on http://0.0.0.0:' in stdout_line:
+                    # The Base Service will receive this message and send invitations
+                    print('Publish Ready!')
+                    self.redis.publish('webrtc.' + key, 'Ready!')
+
+        print('poll_signaling_server_process - done!')
+        thread = threading.currentThread()
+        reactor.callFromThread(lambda: thread.join())
 
     def launch_signaling_server(self, port, key, owner, session_info):
 
         # Read specific configurations
         executable_args = [
-                           #  sys.executable,
+                           # sys.executable,
                            os.path.realpath(self.config.webrtc_config['executable']),
+                           '-u',
                            self.config.webrtc_config['script'],
                            '--port=' + str(port),
                            '--password=' + str(key),
@@ -82,34 +89,46 @@ class TeleopServiceWebRTCModule(WebRTCModule):
         print(self.module_name + ' - Should create WebRTC session with name:', room_name, port, key,
               session_info['session_parameters'])
 
-        if port and len(session_info['session_devices']) == 1:
+        if port and len(session_info['session_devices']) == 1 and len(session_info['session_users']) == 1:
 
             # Get robot device
             robot_device = session_info['session_devices'][0]
 
+            # Get user uuid
+            user_uuid = session_info['session_users'][0]
+
+            user_response = self.service.get_from_opentera('/api/service/users',
+                                                            {'user_uuid': user_uuid})
+
+            if user_response.status_code != 200:
+                return False, {'error': 'Unable to get user info.'}
+
+            user_info = user_response.json()
+            user_name = quote(user_info['user_firstname'] + ' ' + user_info['user_lastname'])
+
+
             # Get robot device info
-            response = self.service.get_from_opentera('/api/service/devices',
+            device_response = self.service.get_from_opentera('/api/service/devices',
                                                       {'device_uuid': robot_device,
                                                        'with_device_type': True,
                                                        'with_device_subtype': True})
-
-            if response.status_code != 200:
+            if device_response.status_code != 200:
                 return False, {'error': 'Unable to get device info.'}
 
-            response_info = response.json()
+            device_info = device_response.json()
 
-            if not 'device_subtype' in response_info:
+            if not 'device_subtype' in device_info:
                 return False,  {'error': 'Unable to get device subtype info.'}
 
-            if 'device_subtype_name' in response_info['device_subtype']:
-                robot_device_subtype_string = quote(response_info['device_subtype']['device_subtype_name'])
+            if 'device_subtype_name' in device_info['device_subtype']:
+                robot_device_subtype_string = quote(device_info['device_subtype']['device_subtype_name'])
             else:
                 robot_device_subtype_string = quote('default')
 
             url_users = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                         + str(self.config.webrtc_config['external_port']) \
                         + '/webrtc_teleop/' + str(port) + '/#user?pwd=' \
-                        + key + '&port=' + str(port) + '&user=1' + '&robot=' + robot_device_subtype_string
+                        + key + '&port=' + str(port) + '&user=1' + '&robot=' + robot_device_subtype_string + '&name=' + user_name
 
             url_participants = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                                + str(self.config.webrtc_config['external_port']) \
