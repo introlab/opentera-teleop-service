@@ -1,5 +1,5 @@
 <template>
-  <div class="card mx-auto my-auto" style="width: 20rem;">
+  <div class="card mx-auto card-size">
     <div class="card-body">
           <h5 class="card-header bg-info">{{ data.device_name }}</h5>
           <!-- <h6 class="card-subtitle mt-2 mb-2 text-muted">{{data.device_uuid}}</h6> -->
@@ -146,5 +146,8 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  .card-size {
+    width: 20rem;
+    margin-top:0.5rem !important;
+  }
 </style>
