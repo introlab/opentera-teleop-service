@@ -14,7 +14,10 @@
         </div>
         <div class="col navbar-nav centered">
           <div><ElapsedSessionTime></ElapsedSessionTime></div>
-          <div><button class="btn btn-danger one-line" @click="closeSession" :disabled="!inSession" v-if="inSession">{{ $t('Stop Session') }}</button></div>
+          <div class="center-div"><button class="btn btn-danger one-line" @click="closeSession" :disabled="!inSession" v-if="inSession">{{ $t('Stop Session') }}</button></div>
+          <div v-if="!onSessionPage">
+            <button class="btn btn-success one-line" @click="returnToSession" :disabled="!inSession" v-if="inSession">{{ $t('Return to session') }}</button>
+          </div>
         </div>
         <div class="col navbar-nav" style="justify-content:right;">
           <div class="dropdown center-menu" style="margin-right:0" v-if="loggedIn">
@@ -62,11 +65,17 @@ export default {
       this.$store.dispatch('api/stopSession').then(response => {
         this.$router.replace('/')
       })
+    },
+    returnToSession () {
+      this.$router.push('/Session')
     }
   },
   computed: {
     loggedIn () {
       return this.$store.state.auth.status.loggedIn
+    },
+    onSessionPage () {
+      return this.$route.path.toLowerCase() === '/session' && this.inSession
     },
     ...mapGetters(['userName', 'serviceInfo', 'deviceTypeInfo', 'sessionTypeInfo', 'inSession', 'sessionInfo', 'allSessions'])
   }
@@ -79,27 +88,36 @@ export default {
     white-space: nowrap;
     text-align: center;
   }
-  .centered {
-    display: flex;
-    flex-direction: row;
+  @media (min-width: 960px) {
+    .centered {
+      display: flex;
+      flex-direction: row;
+    }
+    .centered > div {
+      width: 50%;
+      display: flex;
+      justify-content: left;
+      align-items: center;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+    .centered > div:first-child {
+      margin-right: 0;            /* space between boxes */
+      justify-content: right!important;
+    }
+    .center-div {
+      display: inline-block!important;
+      width: max-content!important;
+    }
+    .center-menu {
+      display: flex;
+      justify-content: center;
+    }
   }
   .centered > div {
-    width: 50%;
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    padding-left: 1rem;
-  }
-  .centered > div:first-child {
-    margin-right: 0;            /* space between boxes */
-    justify-content: right!important;
-  }
-  .center-menu {
-    display: flex;
-    justify-content: center;
+    padding-bottom:0.5rem;
   }
   .dropdown-menu.show  {
     width: max-content;
   }
-
 </style>

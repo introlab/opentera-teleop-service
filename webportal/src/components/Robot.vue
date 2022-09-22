@@ -20,7 +20,8 @@
              <div class="alert alert-info" v-if="connecting">
             {{$t('Connecting')}}...
             </div>
-            <button class="btn btn-primary" @click="buttonClicked" :disabled="isBusy" v-if="!connecting"> {{$t('Connect')}} </button>
+            <button class="btn btn-primary" @click="buttonClicked" :disabled="isBusy || inSession" v-if="!connecting && !inCurrentSession"> {{$t('Connect')}} </button>
+            <button class="btn btn-success" @click="returnToSession"  v-else-if="!connecting && inCurrentSession"> {{$t('Return to session')}} </button>
           </div>
     </div>
     <!--
@@ -30,6 +31,9 @@
 </template>
 
 <script>
+
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters } = createNamespacedHelpers('api')
 
 // @ is an alias to /src
 
@@ -51,6 +55,9 @@ export default {
           this.connecting = false
         }
       )
+    },
+    returnToSession () {
+      this.$router.push('/session')
     }
   },
   data: function () {
@@ -61,6 +68,9 @@ export default {
   computed: {
     isBusy () {
       return this.data.device_busy
+    },
+    inCurrentSession () {
+      return this.teleopSession?.sessionDevices ? this.teleopSession.sessionDevices.includes(this.data.device_uuid) : false
     },
     timestamp () {
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }
@@ -139,7 +149,9 @@ export default {
       } catch (err) {
         return 0
       }
-    }
+    },
+    // mix the getters into computed with object spread operator
+    ...mapGetters(['teleopSession', 'inSession'])
   }
 }
 

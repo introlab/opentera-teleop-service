@@ -50,9 +50,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .navbar-text {
-    padding-right:1rem;
-    border-right: 1px solid #333;
-    border-color: rgba(0,0,0,.55);
-  }
+
 </style>
