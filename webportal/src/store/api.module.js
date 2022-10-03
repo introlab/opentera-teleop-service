@@ -163,9 +163,13 @@ export const api = {
         devices.push(value)
       }
 
+      const devicesInSession = devices.map(x => x.device_uuid).filter((uuid) =>
+        state.teleop_session_info?.sessionDevices ? state.teleop_session_info?.sessionDevices.includes(uuid) : false
+      )
+
       // Sort by name
       devices.sort((a, b) => {
-        if (a.device_name < b.device_name) {
+        if (a.device_name < b.device_name || (devicesInSession.includes(a.device_uuid) && !devicesInSession.includes(b.device_uuid))) {
           return -1 // a comes before b in the sort order.
         }
         if (a.device_name > b.device_name) {

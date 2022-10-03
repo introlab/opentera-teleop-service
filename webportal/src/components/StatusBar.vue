@@ -109,13 +109,13 @@ export default {
       display: inline-block!important;
       width: max-content!important;
     }
-    .center-menu {
-      display: flex;
-      justify-content: center;
-    }
   }
   .centered > div {
     padding-bottom:0.5rem;
+  }
+  .center-menu {
+    display: flex;
+    justify-content: center;
   }
   .dropdown-menu.show  {
     width: max-content;
