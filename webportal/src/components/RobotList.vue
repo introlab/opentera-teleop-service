@@ -1,9 +1,7 @@
 <template>
-  <div class="d-grid container-fluid bg-secondary">
-      <h1 class="bg-info">Online Robots</h1>
-      <div class="row">
-      <Robot v-for="(robot, index) in onlineRobots " :key=index :data=robot />
-      </div>
+  <h1 class="bg-info sticky-top sticky-offset">{{ $t('Online Robots') }}</h1>
+  <div class="row g-0">
+    <Robot v-for="(robot, index) in onlineRobots " :key=index :data=robot />
   </div>
 </template>
 
@@ -42,5 +40,8 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  .sticky-offset {
+    top:56px;
+    margin-bottom:0;
+  }
 </style>

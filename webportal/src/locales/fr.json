@@ -9,7 +9,7 @@
       "Powered By": "Propulsé par",
       "Acknowledgements": "Remerciements",
       "Loading": "Chargement",
-      "Home": "Home",
+      "Home": "Acceuil",
       "About": "À propos",
       "Sessions": "Sessions",
       "Stop Session": "Arrêter la session",
@@ -18,5 +18,7 @@
       "Connect": "Connexion",
       "Last Update": "Dernière mise à jour",
       "Charging": "En charge",
-      "Not Charging": "Hors charge"
+      "Not Charging": "Hors charge",
+      "Online Robots": "Robots en ligne",
+      "Return to session": "Retourner à la session"
 }

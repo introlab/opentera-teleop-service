@@ -1,7 +1,6 @@
 <template>
       <div class="container-fluid bg-white">
             <div class="row my-0">
-
                   <h1 class="bg-info">{{ $t('Robot Teleoperation Service') }}</h1>
                   <div class="row mx-1">
 

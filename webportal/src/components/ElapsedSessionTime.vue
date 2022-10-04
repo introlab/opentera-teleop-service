@@ -1,7 +1,7 @@
 <template>
-      <div class="session-time">
-            {{ currentDateTime }}
-      </div>
+      <span v-if="inSession" class="session-time navbar-text">
+            {{ elapsedTime }}
+      </span>
 </template>
 
 <script>
@@ -15,40 +15,35 @@ export default {
   components: {},
   props: {},
   methods: {
-    setCurrentTime () {
-      this.currentDate = new Date()
-    },
-    setSessionTime () {
-      this.creationTime = new Date()
+    updateTimer () {
+      setTimeout(() => {
+        if (this.inSession) {
+          this.currTime = Date.now()
+          this.updateTimer()
+        }
+      }, 1000)
     }
-
   },
   data () {
     return {
-      creationDate: new Date(),
-      currentDate: new Date(),
-      timer: undefined
+      currTime: new Date(),
+      startTime: new Date()
     }
   },
   computed: {
-    currentDateTime () {
-      var options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }
-      return this.currentDate.toLocaleDateString('fr', options)
-    },
     elapsedTime () {
-      return {
-        milliseconds: this.currentDate - this.creationDate
-      }
+      return new Date(this.currTime - this.startTime).toISOString().slice(11, 19)
     },
     // mix the getters into computed with object spread operator
-    ...mapGetters(['sessionInfo'])
+    ...mapGetters(['sessionInfo', 'inSession'])
   },
-  beforeMount () {
-    // 1000ms timer
-    this.timer = setInterval(this.setCurrentTime, 1000)
-  },
-  afterUnmount () {
-    clearInterval(this.timer)
+  watch: {
+    inSession () {
+      if (this.inSession) {
+        this.startTime = Date.now()
+        this.updateTimer()
+      }
+    }
   }
 }
 </script>

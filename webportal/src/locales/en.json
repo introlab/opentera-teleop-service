@@ -18,5 +18,7 @@
   "Connect": "Connect",
   "Last Update": "Last Update",
   "Charging": "Charging",
-  "Not Charging": "Discharging"
+  "Not Charging": "Discharging",
+  "Online Robots": "Online Robots",
+  "Return to session": "Return to session"
 }
