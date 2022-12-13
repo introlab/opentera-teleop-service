@@ -22,7 +22,7 @@ manage_session_schema = api.schema_model('session_manage', {
             'type': 'string'
         }
     },
-    'required': ['session_uuid']
+    'required': ['session_uuid', 'action']
 })
 
 
