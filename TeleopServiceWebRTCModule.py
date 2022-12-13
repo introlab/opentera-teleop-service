@@ -8,6 +8,7 @@ import sys
 from urllib.parse import quote
 import time
 
+
 class TeleopServiceWebRTCModule(WebRTCModule):
     def __init__(self, config: ServiceConfigManager, service=None):
         # Default init
@@ -89,41 +90,42 @@ class TeleopServiceWebRTCModule(WebRTCModule):
         print(self.module_name + ' - Should create WebRTC session with name:', room_name, port, key,
               session_info['session_parameters'])
 
-        if port and len(session_info['session_devices']) == 1 and len(session_info['session_users']) == 1:
+        if port:
+            user_info = 'unknown'
+            user_name = 'unknown'
+            if len(session_info['session_users']) > 0:
+                for user_uuid in session_info['session_users']:
+                    # Get user info
+                    user_response = self.service.get_from_opentera('/api/service/users',
+                                                                    {'user_uuid': user_uuid})
+                    if user_response.status_code != 200:
+                        return False, {'error': 'Unable to get user info.'}
 
-            # Get robot device
-            robot_device = session_info['session_devices'][0]
+                # Currently only uses the last user's information to generate the url, this is a limitation of the api
+                user_info = user_response.json()
+                user_name = quote(user_info['user_firstname'] + ' ' + user_info['user_lastname'])
 
-            # Get user uuid
-            user_uuid = session_info['session_users'][0]
+            robot_device_subtype_string = 'unknown'
+            if len(session_info['session_devices']) > 0:
+                for robot_device in session_info['session_devices']:
+                    # Get robot device info
+                    device_response = self.service.get_from_opentera('/api/service/devices',
+                                                              {'device_uuid': robot_device,
+                                                               'with_device_type': True,
+                                                               'with_device_subtype': True})
+                    if device_response.status_code != 200:
+                        return False, {'error': 'Unable to get device info.'}
 
-            user_response = self.service.get_from_opentera('/api/service/users',
-                                                            {'user_uuid': user_uuid})
+                # Currently only uses the last device's information to generate the url, this is a limitation of the api
+                device_info = device_response.json()
 
-            if user_response.status_code != 200:
-                return False, {'error': 'Unable to get user info.'}
+                if not 'device_subtype' in device_info:
+                    return False,  {'error': 'Unable to get device subtype info.'}
 
-            user_info = user_response.json()
-            user_name = quote(user_info['user_firstname'] + ' ' + user_info['user_lastname'])
-
-
-            # Get robot device info
-            device_response = self.service.get_from_opentera('/api/service/devices',
-                                                      {'device_uuid': robot_device,
-                                                       'with_device_type': True,
-                                                       'with_device_subtype': True})
-            if device_response.status_code != 200:
-                return False, {'error': 'Unable to get device info.'}
-
-            device_info = device_response.json()
-
-            if not 'device_subtype' in device_info:
-                return False,  {'error': 'Unable to get device subtype info.'}
-
-            if 'device_subtype_name' in device_info['device_subtype']:
-                robot_device_subtype_string = quote(device_info['device_subtype']['device_subtype_name'])
-            else:
-                robot_device_subtype_string = quote('default')
+                if 'device_subtype_name' in device_info['device_subtype']:
+                    robot_device_subtype_string = quote(device_info['device_subtype']['device_subtype_name'])
+                else:
+                    robot_device_subtype_string = quote('default')
 
             url_users = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                         + str(self.config.webrtc_config['external_port']) \

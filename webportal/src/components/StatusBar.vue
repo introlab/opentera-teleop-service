@@ -12,12 +12,16 @@
           <router-link class=" nav-item nav-link" to="/about">{{ $t('About') }}</router-link>
           <LocaleChanger></LocaleChanger>
         </div>
-        <div class="col navbar-nav centered">
+        <div class="col navbar-nav centered" v-if=inSession>
           <div><ElapsedSessionTime></ElapsedSessionTime></div>
           <div class="center-div"><button class="btn btn-danger one-line" @click="closeSession" :disabled="!inSession" v-if="inSession">{{ $t('Stop Session') }}</button></div>
           <div v-if="!onSessionPage">
-            <button class="btn btn-success one-line" @click="returnToSession" :disabled="!inSession" v-if="inSession">{{ $t('Return to session') }}</button>
+            <button class="btn btn-success one-line" @click="goToSession" :disabled="!inSession" v-if="inSession && !inMultipleRobotsSession">{{ $t('Return to session') }}</button>
+            <button class="btn btn-success one-line" @click="goToSession" :disabled="!inSession" v-else-if="inSession">{{ $t('Join session') }}</button>
           </div>
+        </div>
+        <div v-else-if="hasMultipleSelectedDevices">
+          <button class="btn btn-success one-line" @click="startSession">{{ $t('Start session') }}</button>
         </div>
         <div class="col navbar-nav" style="justify-content:right;">
           <div class="dropdown center-menu" style="margin-right:0" v-if="loggedIn">
@@ -66,8 +70,20 @@ export default {
         this.$router.replace('/')
       })
     },
-    returnToSession () {
-      this.$router.push('/Session')
+    goToSession () {
+      this.$router.push('/session')
+    },
+    startSession () {
+      this.$store.dispatch('api/setMultiRobotSession', true)
+      this.$store.dispatch('api/startSession', this.selectedDevices).then(
+        (session) => {
+          console.log('Robot newSession:', session)
+        },
+        (error) => {
+          console.log('Robot errorSession', error)
+          this.connecting = false
+        }
+      )
     }
   },
   computed: {
@@ -77,7 +93,7 @@ export default {
     onSessionPage () {
       return this.$route.path.toLowerCase() === '/session' && this.inSession
     },
-    ...mapGetters(['userName', 'serviceInfo', 'deviceTypeInfo', 'sessionTypeInfo', 'inSession', 'sessionInfo', 'allSessions'])
+    ...mapGetters(['userName', 'serviceInfo', 'deviceTypeInfo', 'sessionTypeInfo', 'inSession', 'sessionInfo', 'allSessions', 'selectedDevices', 'hasMultipleSelectedDevices', 'inMultipleRobotsSession'])
   }
 }
 </script>
@@ -109,13 +125,13 @@ export default {
       display: inline-block!important;
       width: max-content!important;
     }
-    .center-menu {
-      display: flex;
-      justify-content: center;
-    }
   }
   .centered > div {
     padding-bottom:0.5rem;
+  }
+  .center-menu {
+    display: flex;
+    justify-content: center;
   }
   .dropdown-menu.show  {
     width: max-content;

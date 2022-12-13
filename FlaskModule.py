@@ -241,10 +241,11 @@ class FlaskModule(BaseModule):
         kwargs = {'flaskModule': self}
 
         from API.QueryVersion import QueryVersion
+        from API.QueryManageSession import QueryManageSession
 
         # Resources
         default_api_ns.add_resource(QueryVersion, '/version', resource_class_kwargs=kwargs)
-
+        default_api_ns.add_resource(QueryManageSession, '/session/manager', resource_class_kwargs=kwargs)
 
     def init_views(self):
         from Views.Index import Index
