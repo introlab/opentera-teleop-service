@@ -148,11 +148,11 @@ class AuthService {
     return response.data
   }
 
-  async startSession (user, device, userInfo, sessionTypeInfo) {
+  async startSession (user, devices, userInfo, sessionTypeInfo) {
     if (!user) {
       throw new Error('no user specified')
     }
-    console.log('startSession', user, device, userInfo, sessionTypeInfo)
+    console.log('startSession', user, devices, userInfo, sessionTypeInfo)
     const response = await axios.post(API_BASE_URL + 'sessions/manager', {
       session_manage: {
         /* ID session must be 0 to create a new session */
@@ -168,7 +168,7 @@ class AuthService {
         /* No invited participants */
         session_participants: [],
         /* Invited devices */
-        session_devices: [device.device_uuid],
+        session_devices: Object.keys(devices),
         action: 'start',
         parameters: ''
       }

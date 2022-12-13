@@ -20,8 +20,15 @@
              <div class="alert alert-info" v-if="connecting">
             {{$t('Connecting')}}...
             </div>
-            <button class="btn btn-primary" @click="buttonClicked" :disabled="isBusy || inSession" v-if="!connecting && !inCurrentSession"> {{$t('Connect')}} </button>
-            <button class="btn btn-success" @click="returnToSession"  v-else-if="!connecting && inCurrentSession"> {{$t('Return to session')}} </button>
+            <div>
+              <button class="btn btn-primary" @click="buttonClicked" :disabled="isBusy || inSession" v-if="!connecting && !inCurrentSession"> {{$t('Connect')}} </button>
+              <button class="btn btn-success" @click="goToSession"  v-else-if="!connecting && inCurrentSession && inMultipleRobotsSession"> {{$t('Join session')}} </button>
+              <button class="btn btn-success" @click="goToSession"  v-else-if="!connecting && inCurrentSession"> {{$t('Return to session')}} </button>
+            </div>
+            <div class="pt-2">
+              <button class="btn btn-secondary" @click="toggleSelection" :disabled="isBusy" v-if="!connecting && !inSession && !isSelected">{{$t('Select')}} </button>
+              <button class="btn btn-success" @click="toggleSelection" :disabled="isBusy || inSession" v-else-if="!connecting && !inSession && isSelected">{{$t('Unselect')}} </button>
+            </div>
           </div>
     </div>
     <!--
@@ -46,7 +53,9 @@ export default {
       console.log('Robot:buttonClicked')
       // Start a session
       this.connecting = true
-      this.$store.dispatch('api/startSession', this.data).then(
+      const devices = {}
+      devices[this.data.device_uuid] = this.data
+      this.$store.dispatch('api/startSession', devices).then(
         (session) => {
           console.log('Robot newSession:', session)
         },
@@ -56,8 +65,15 @@ export default {
         }
       )
     },
-    returnToSession () {
+    goToSession () {
       this.$router.push('/session')
+    },
+    toggleSelection () {
+      if (!(this.data.device_uuid in this.selectedDevices)) {
+        this.$store.dispatch('api/addSelectedDevice', this.data)
+      } else {
+        this.$store.dispatch('api/removeSelectedDevice', this.data.device_uuid)
+      }
     }
   },
   data: function () {
@@ -71,6 +87,9 @@ export default {
     },
     inCurrentSession () {
       return this.teleopSession?.sessionDevices ? this.teleopSession.sessionDevices.includes(this.data.device_uuid) : false
+    },
+    isSelected () {
+      return this.data.device_uuid in this.selectedDevices
     },
     timestamp () {
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }
@@ -151,7 +170,7 @@ export default {
       }
     },
     // mix the getters into computed with object spread operator
-    ...mapGetters(['teleopSession', 'inSession'])
+    ...mapGetters(['teleopSession', 'inSession', 'inMultipleRobotsSession', 'selectedDevices'])
   }
 }
 

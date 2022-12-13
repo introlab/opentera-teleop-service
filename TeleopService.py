@@ -6,7 +6,7 @@ import sys
 import uuid
 import json
 from json.decoder import JSONDecodeError
-
+import Globals
 from flask_babel import gettext
 
 # Configuration
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     config_man.service_config['hostname'] = service_info['service_hostname']
 
     # Create the service
-    service = TeleopService(config_man, service_info)
+    Globals.service = TeleopService(config_man, service_info)
 
     # Start App/ reactor events
     reactor.run()

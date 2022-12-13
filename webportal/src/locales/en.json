@@ -20,5 +20,9 @@
   "Charging": "Charging",
   "Not Charging": "Discharging",
   "Online Robots": "Online Robots",
-  "Return to session": "Return to session"
+  "Return to session": "Return to session",
+  "Join session": "Join session",
+  "Select": "Select",
+  "Unselect": "Unselect",
+  "Start session": "Start a session"
 }

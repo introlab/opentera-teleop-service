@@ -11,7 +11,9 @@ export const api = {
     session_type_info: {},
     teleop_session_info: {},
     current_session: {},
-    sessions: []
+    sessions: [],
+    selected_devices_dict: {},
+    in_multiple_robots_session: false
   },
   actions: {
     getOnlineDevices ({ commit }) {
@@ -93,14 +95,14 @@ export const api = {
         }
       )
     },
-    startSession ({ commit }, device) {
+    startSession ({ commit }, devices) {
       /*
             device is the object containing the robot information returned by getOnlineDevices.
             We will need to star the session by using device.device_uuid
           */
-      console.log('startSession with: ', device)
+      console.log('startSession with: ', devices)
 
-      return AuthService.startSession(this.state.auth.user, device, this.state.api.user_info, this.state.api.session_type_info).then(
+      return AuthService.startSession(this.state.auth.user, devices, this.state.api.user_info, this.state.api.session_type_info).then(
         session => {
           commit('updateCurrentSession', session)
           return Promise.resolve(session)
@@ -112,6 +114,7 @@ export const api = {
       )
     },
     stopSession ({ commit }) {
+      commit('setMultiRobotSession', false)
       return AuthService.stopSession(this.state.auth.user, this.state.api.teleop_session_info).then(
         session => {
           commit('updateCurrentSession', {})
@@ -126,10 +129,13 @@ export const api = {
     joinSessionWithEvent ({ commit }, event) {
       console.log('joinSessionWithEvent', event)
       commit('updateTeleopSession', event)
-      router.push('/session')
+      if (!this.state.api.in_multiple_robots_session) {
+        router.push('/session')
+      }
     },
     stopSessionWithEvent ({ commit }, event) {
       console.log('stopSessionWithEvent', event)
+      commit('setMultiRobotSession', false)
       commit('updateTeleopSession', {})
       commit('updateCurrentSession', {})
       router.push('/')
@@ -150,9 +156,19 @@ export const api = {
     removeDeviceWithEvent ({ commit }, event) {
       console.log('removeDeviceWithEvent', event)
       commit('updateDeviceRemoval', event.deviceUuid)
+      commit('removeSelectedDevice', event.deviceUuid)
     },
     logout ({ commit }) {
       commit('logout')
+    },
+    addSelectedDevice ({ commit }, device) {
+      commit('addSelectedDevice', device)
+    },
+    removeSelectedDevice ({ commit }, deviceUuid) {
+      commit('removeSelectedDevice', deviceUuid)
+    },
+    setMultiRobotSession ({ commit }, value) {
+      commit('setMultiRobotSession', value)
     }
   },
   getters: {
@@ -217,6 +233,15 @@ export const api = {
     },
     allSessions: (state) => {
       return state.sessions
+    },
+    selectedDevices: (state) => {
+      return state.selected_devices_dict
+    },
+    hasMultipleSelectedDevices: (state) => {
+      return Object.keys(state.selected_devices_dict).length > 1
+    },
+    inMultipleRobotsSession: (state) => {
+      return state.in_multiple_robots_session
     }
   },
   mutations: {
@@ -229,6 +254,8 @@ export const api = {
       state.current_session = {}
       state.teleop_session_info = {}
       state.sessions = []
+      state.selected_devices_dict = {}
+      state.in_multiple_robots_session = false
     },
     updateOnlineDevices (state, devices) {
       // We have an array returned from the API
@@ -280,6 +307,15 @@ export const api = {
     },
     updateDeviceRemoval (state, uuid) {
       delete state.online_devices_dict[uuid]
+    },
+    addSelectedDevice (state, device) {
+      state.selected_devices_dict[device.device_uuid] = device
+    },
+    removeSelectedDevice (state, uuid) {
+      delete state.selected_devices_dict[uuid]
+    },
+    setMultiRobotSession (state, value) {
+      state.in_multiple_robots_session = value
     }
   }
 }
