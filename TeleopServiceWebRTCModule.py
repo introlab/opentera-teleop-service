@@ -8,6 +8,7 @@ import sys
 from urllib.parse import quote
 import time
 
+
 class TeleopServiceWebRTCModule(WebRTCModule):
     def __init__(self, config: ServiceConfigManager, service=None):
         # Default init
@@ -89,31 +90,26 @@ class TeleopServiceWebRTCModule(WebRTCModule):
         print(self.module_name + ' - Should create WebRTC session with name:', room_name, port, key,
               session_info['session_parameters'])
 
-        if port and len(session_info['session_devices']) == 1 and len(session_info['session_users']) == 1:
-
-            # Get robot device
-            robot_device = session_info['session_devices'][0]
-
-            # Get user uuid
-            user_uuid = session_info['session_users'][0]
-
-            user_response = self.service.get_from_opentera('/api/service/users',
-                                                            {'user_uuid': user_uuid})
-
-            if user_response.status_code != 200:
-                return False, {'error': 'Unable to get user info.'}
+        if port:
+            for user_uuid in session_info['session_users']:
+                # Get user info
+                user_response = self.service.get_from_opentera('/api/service/users',
+                                                                {'user_uuid': user_uuid})
+                if user_response.status_code != 200:
+                    return False, {'error': 'Unable to get user info.'}
 
             user_info = user_response.json()
             user_name = quote(user_info['user_firstname'] + ' ' + user_info['user_lastname'])
 
 
-            # Get robot device info
-            device_response = self.service.get_from_opentera('/api/service/devices',
-                                                      {'device_uuid': robot_device,
-                                                       'with_device_type': True,
-                                                       'with_device_subtype': True})
-            if device_response.status_code != 200:
-                return False, {'error': 'Unable to get device info.'}
+            for robot_device in session_info['session_devices']:
+                # Get robot device info
+                device_response = self.service.get_from_opentera('/api/service/devices',
+                                                          {'device_uuid': robot_device,
+                                                           'with_device_type': True,
+                                                           'with_device_subtype': True})
+                if device_response.status_code != 200:
+                    return False, {'error': 'Unable to get device info.'}
 
             device_info = device_response.json()
 

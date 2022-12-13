@@ -20,5 +20,9 @@
       "Charging": "En charge",
       "Not Charging": "Hors charge",
       "Online Robots": "Robots en ligne",
-      "Return to session": "Retourner à la session"
+      "Return to session": "Retourner à la session",
+      "Join session": "Rejoindre la session",
+      "Select": "Sélectionner",
+      "Unselect": "Désélectionner",
+      "Start session": "Démarrer une session"
 }

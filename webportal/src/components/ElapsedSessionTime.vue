@@ -35,7 +35,12 @@ export default {
       return new Date(this.currTime - this.startTime).toISOString().slice(11, 19)
     },
     // mix the getters into computed with object spread operator
-    ...mapGetters(['sessionInfo', 'inSession'])
+    ...mapGetters(['inSession'])
+  },
+  created () {
+    if (this.inSession) {
+      this.updateTimer()
+    }
   },
   watch: {
     inSession () {
