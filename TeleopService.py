@@ -20,6 +20,7 @@ from FlaskModule import FlaskModule
 # Local
 from opentera.services.BaseWebRTCService import BaseWebRTCService
 from TeleopServiceWebRTCModule import TeleopServiceWebRTCModule
+from opentera.forms.TeraForm import TeraForm, TeraFormSection, TeraFormItem
 
 
 class TeleopService(BaseWebRTCService):
@@ -34,6 +35,19 @@ class TeleopService(BaseWebRTCService):
 
         # Create WebRTCModule
         self.webRTCModule = TeleopServiceWebRTCModule(config_man, self)
+
+        # Override from ServiceOpenTera
+    def get_session_type_config_form(self, id_session_type: int) -> dict:
+        # Sections
+        form = TeraForm("session_type_config")
+
+        section = TeraFormSection("general", gettext("General configuration"))
+        form.add_section(section)
+        # Items
+        section.add_item(TeraFormItem("session_recordable", gettext("Allow session recording"),
+                                      "boolean", False, item_default=False))
+
+        return form.to_dict()
 
     def notify_service_messages(self, pattern, channel, message):
         pass
@@ -85,4 +99,3 @@ if __name__ == '__main__':
 
     # Start App/ reactor events
     reactor.run()
-
