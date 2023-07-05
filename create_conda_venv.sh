@@ -1,5 +1,5 @@
 echo "Create or update conda venv"
-conda install -m -c conda-forge -y -p $PWD/venv python=3.8
+conda install -m -c conda-forge -y -p $PWD/venv python=3.10
 echo "Activating venv"
 conda activate $PWD/venv
 echo "Installing requirements (make sure git submodules are installed)..."
