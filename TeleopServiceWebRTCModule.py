@@ -122,10 +122,11 @@ class TeleopServiceWebRTCModule(WebRTCModule):
                 if not 'device_subtype' in device_info:
                     return False,  {'error': 'Unable to get device subtype info.'}
 
-                if 'device_subtype_name' in device_info['device_subtype']:
-                    robot_device_subtype_string = quote(device_info['device_subtype']['device_subtype_name'])
-                else:
-                    robot_device_subtype_string = quote('default')
+                robot_device_subtype_string = quote('default')
+
+                if device_info['device_subtype'] != None:
+                    if 'device_subtype_name' in device_info['device_subtype']:
+                        robot_device_subtype_string = quote(device_info['device_subtype']['device_subtype_name'])
 
             url_users = 'https://' + self.config.webrtc_config['hostname'] + ':' \
                         + str(self.config.webrtc_config['external_port']) \
