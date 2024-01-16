@@ -6,7 +6,6 @@ const API_BASE_URL = process.env.VUE_APP_OPENTERA_API_URL
 
 class AuthService {
   async login (loginInfo) {
-    console.log('login', loginInfo)
     const response = await axios.get(API_BASE_URL + 'login', {
       auth: {
         username: loginInfo.username,
